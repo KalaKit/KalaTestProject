@@ -44,18 +44,36 @@ set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
 
 # External files
 set(EXT_WINDOW_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaWindow")
-set(EXT_INPUT_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaInput")
 set(EXT_CRASH_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaCrashHandler")
 
-# Add GLFW
+# Add KalaWindow
 if (WIN32)
 	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-		set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/release/glfw3dll.lib")
+		set(PHYSICS_LIBRARY_PATH "${EXT_WINDOW_DIR}/release/KalaWindow.lib")
 	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/debug/glfw3dll.lib")
+		set(PHYSICS_LIBRARY_PATH "${EXT_WINDOW_DIR}/debug/KalaWindowD.lib")
 	endif()
 else()
-	find_package(glfw3 REQUIRED)
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+		set(PHYSICS_LIBRARY_PATH "${EXT_WINDOW_DIR}/release/libKalaWindow.so")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(PHYSICS_LIBRARY_PATH "${EXT_WINDOW_DIR}/debug/libKalaWindowD.so")
+	endif()
+endif()
+
+# Add KalaCrashHandler
+if (WIN32)
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+		set(WINDOW_LIBRARY_PATH "${EXT_CRASH_DIR}/release/KalaCrashHandler.lib")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(WINDOW_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/KalaCrashHandlerD.lib")
+	endif()
+else()
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/libKalaCrashHandler.so")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/libKalaCrashHandlerD.so")
+	endif()
 endif()
 
 # Add your source files
@@ -79,7 +97,6 @@ target_compile_features(TestProject PRIVATE cxx_std_20)
 target_include_directories(TestProject PRIVATE  
 	${INCLUDE_DIR}
 	${EXT_WINDOW_DIR}
-	${EXT_INPUT_DIR}
 	${EXT_CRASH_DIR}
 )
 
@@ -87,26 +104,24 @@ target_include_directories(TestProject PRIVATE
 target_include_directories(TestProject PRIVATE ${HUB_INCLUDE_DIRS})
 
 if (WIN32)
-	target_link_libraries(TestProject PRIVATE external_libs 
-		${GLFW_LIBRARY_PATH})
+	target_link_libraries(TestProject PRIVATE 
+		${WINDOW_LIBRARY_PATH}
+		${CRASH_LIBRARY_PATH})
 else()
 	find_package(Wayland QUIET)
 	find_package(X11 QUIET)
 	if (Wayland_FOUND)
 		target_link_libraries(TestProject PRIVATE 
-			external_libs
-			glfw
+			${WINDOW_LIBRARY_PATH}
+			${CRASH_LIBRARY_PATH}
 			Wayland::Client)
 	elseif (X11_FOUND)
 		target_link_libraries(TestProject PRIVATE 
-			external_libs
-			glfw
+			${WINDOW_LIBRARY_PATH}
+			${CRASH_LIBRARY_PATH}
 			${X11_LIBRARIES})
 	endif()
 endif()
-
-# Define GLFW_INCLUDE_NONE
-target_compile_definitions(TestProject PRIVATE GLFW_INCLUDE_NONE)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
 	# Set the subsystem to WINDOWS
