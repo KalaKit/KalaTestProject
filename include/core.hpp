@@ -8,6 +8,7 @@
 namespace Project
 {
 	class Core
+
 	{
 	public:
 		static void Initialize();

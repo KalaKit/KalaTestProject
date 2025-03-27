@@ -19,6 +19,7 @@ using std::cin;
 using KalaKit::KalaWindow;
 using KalaKit::KalaInput;
 using KalaKit::KalaCrashHandler;
+using KalaKit::DebugType;
 
 namespace Project
 {
@@ -27,15 +28,17 @@ namespace Project
 		KalaCrashHandler::Initialize();
 		KalaWindow::Initialize("window", 800, 600);
 		KalaInput::Initialize();
+
+		KalaWindow::SetDebugType(DebugType::DEBUG_WINDOW_CORNER_EDGE);
 	}
 		
 	void Core::Update()
 	{
 		cout << "Reached render loop!\n";
 
-		while (!KalaInput::ShouldClose())
+		while (!KalaWindow::ShouldClose())
 		{
-			KalaInput::Update();
+			KalaWindow::Update();
 		}
 	}
 }
