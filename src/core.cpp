@@ -29,7 +29,7 @@ namespace Project
 		KalaWindow::Initialize("window", 800, 600);
 		KalaInput::Initialize();
 
-		KalaWindow::SetDebugType(DebugType::DEBUG_WINDOW_CORNER_EDGE);
+		//KalaWindow::SetDebugType(DebugType::DEBUG_WINDOW_CORNER_EDGE);
 	}
 		
 	void Core::Update()
