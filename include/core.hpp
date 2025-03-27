@@ -11,5 +11,6 @@ namespace Project
 	{
 	public:
 		static void Initialize();
+		static void Update();
 	};
 }

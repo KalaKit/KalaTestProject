@@ -28,4 +28,14 @@ namespace Project
 		KalaWindow::Initialize("window", 800, 600);
 		KalaInput::Initialize();
 	}
+		
+	void Core::Update()
+	{
+		cout << "Reached render loop!\n";
+
+		while (!KalaInput::ShouldClose())
+		{
+			KalaInput::Update();
+		}
+	}
 }
