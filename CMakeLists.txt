@@ -1,0 +1,168 @@
+﻿cmake_minimum_required(VERSION 3.30.3)
+
+if (WIN32)
+	# Enable hot reload for MSVC
+	if (POLICY CMP0141)
+		cmake_policy(SET CMP0141 NEW)
+		set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
+	endif()
+	# Explicitly set the MSVC toolset for Visual Studio
+	if (MSVC)
+		set(CMAKE_GENERATOR_TOOLSET "v143")
+	endif()
+endif()
+
+# Specify the compiler for Linux builds
+if (UNIX)
+    set(CMAKE_C_COMPILER "/usr/bin/gcc")
+    set(CMAKE_CXX_COMPILER "/usr/bin/g++")
+endif()
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+set(PROJECT_MAJOR_VERSION 1)
+set(PROJECT_MINOR_VERSION 0)
+set(PROJECT_PATCH_VERSION 0)
+set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT_PATCH_VERSION}")
+
+project("TestProject" VERSION ${PROJECT_VERSION})
+
+if (MSVC)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY 
+        "$<IF:$<CONFIG:Debug>,MultiThreadedDebug,MultiThreaded>")
+endif()
+
+# Specify resource file for Windows
+if (WIN32)
+    set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
+endif()
+
+# Hub files
+set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
+
+# External files
+set(EXT_WINDOW_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaWindow")
+set(EXT_INPUT_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaInput")
+set(EXT_CRASH_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaCrashHandler")
+
+# Add GLFW
+if (WIN32)
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+		set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/release/glfw3dll.lib")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(GLFW_LIBRARY_PATH "${EXT_GLFW_DIR}/debug/glfw3dll.lib")
+	endif()
+else()
+	find_package(glfw3 REQUIRED)
+endif()
+
+# Add your source files
+file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
+	${CMAKE_SOURCE_DIR}/src/*.cpp
+)
+
+# Build as hub executable
+add_executable(TestProject ${SOURCE_FILES})
+
+if (WIN32)
+	set_source_files_properties(${RESOURCE_FILE} PROPERTIES LANGUAGE RC)
+	target_sources(TestProject PRIVATE ${RESOURCE_FILE})
+endif()
+
+# Forces the name to be TestProject
+set_target_properties(TestProject PROPERTIES OUTPUT_NAME "TestProject")
+
+target_compile_features(TestProject PRIVATE cxx_std_20)
+
+target_include_directories(TestProject PRIVATE  
+	${INCLUDE_DIR}
+	${EXT_WINDOW_DIR}
+	${EXT_INPUT_DIR}
+	${EXT_CRASH_DIR}
+)
+
+# Apply all directories to target
+target_include_directories(TestProject PRIVATE ${HUB_INCLUDE_DIRS})
+
+if (WIN32)
+	target_link_libraries(TestProject PRIVATE external_libs 
+		${GLFW_LIBRARY_PATH})
+else()
+	find_package(Wayland QUIET)
+	find_package(X11 QUIET)
+	if (Wayland_FOUND)
+		target_link_libraries(TestProject PRIVATE 
+			external_libs
+			glfw
+			Wayland::Client)
+	elseif (X11_FOUND)
+		target_link_libraries(TestProject PRIVATE 
+			external_libs
+			glfw
+			${X11_LIBRARIES})
+	endif()
+endif()
+
+# Define GLFW_INCLUDE_NONE
+target_compile_definitions(TestProject PRIVATE GLFW_INCLUDE_NONE)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+	# Set the subsystem to WINDOWS
+	set_target_properties(TestProject PROPERTIES
+		WIN32_EXECUTABLE TRUE
+	)
+
+# Set the entry point (MSVC-specific)
+	if (MSVC)
+		set_target_properties(TestProject PROPERTIES
+		LINK_FLAGS "/ENTRY:mainCRTStartup"
+		)
+	endif()
+endif()
+
+# Set the folder inside the install folder where the exe will be placed for this project
+set(CMAKE_INSTALL_BINDIR bin)
+install(TARGETS TestProject DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+# Copy "files" directory to the install directory after build
+add_custom_command(TARGET TestProject POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove_directory
+    $<TARGET_FILE_DIR:TestProject>/files
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:TestProject>/files
+)
+
+# Copy all DLLs to the install directory after build
+if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+	set(DLL_ORIGIN_DIR "${CMAKE_SOURCE_DIR}/files/external dlls/release")
+elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	set(DLL_ORIGIN_DIR "${CMAKE_SOURCE_DIR}/files/external dlls/debug")
+endif()
+set(DLL_TARGET_DIR "$<TARGET_FILE_DIR:TestProject>")
+
+file(GLOB DLL_FILES "${DLL_ORIGIN_DIR}/*")
+	
+foreach(DLL_FILE ${DLL_FILES})
+    get_filename_component(DLL_NAME ${DLL_FILE} NAME)
+    add_custom_command(TARGET TestProject POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy 
+            ${DLL_FILE} 
+            ${DLL_TARGET_DIR}/${DLL_NAME}
+    )
+endforeach()
+
+set(COPY_TARGETS LICENSE.md README.md LIBRARIES.md)
+foreach(FILE ${COPY_TARGETS})
+  add_custom_command(TARGET TestProject POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E remove
+	$<TARGET_FILE_DIR:TestProject>/${FILE}
+	COMMAND ${CMAKE_COMMAND} -E copy
+	${CMAKE_SOURCE_DIR}/${FILE}
+	$<TARGET_FILE_DIR:TestProject>/${FILE}
+  )
+endforeach()
+
+# Include CPack to enable packaging
+include(CPack)
