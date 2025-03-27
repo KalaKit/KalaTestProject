@@ -5,15 +5,11 @@
 
 #pragma once
 
-#include <string>
-
 namespace Project
 {
-	using std::string;
-	
 	class Core
 	{
 	public:
-		static string Pause();
+		static void Initialize();
 	};
 }

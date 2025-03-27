@@ -5,18 +5,27 @@
 
 #include <iostream>
 
+//external
+#include "window.hpp"
+#include "input.hpp"
+#include "crashHandler.hpp"
+
+//project
 #include "core.hpp"
 
 using std::cout;
 using std::cin;
 
+using KalaKit::KalaWindow;
+using KalaKit::KalaInput;
+using KalaKit::KalaCrashHandler;
+
 namespace Project
 {
-	string Core::Pause()
+	void Core::Initialize()
 	{
-		cout << "Press 'Enter' to continue!";
-
-		cin.get();
-		return "Continued...\n";
+		KalaCrashHandler::Initialize();
+		KalaWindow::Initialize("window", 800, 600);
+		KalaInput::Initialize();
 	}
 }

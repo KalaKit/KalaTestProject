@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+//project
 #include "core.hpp"
 
 using std::cout;
@@ -13,9 +14,9 @@ using Project::Core;
 
 int main()
 {
-	cout << "start!\n";
+	cout << "starting...\n";
 
-	cout << Core::Pause();
+	Core::Initialize();
 	
 	return 0;
 }
