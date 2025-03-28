@@ -9,6 +9,8 @@
 #include "window.hpp"
 #include "input.hpp"
 #include "crashHandler.hpp"
+#include "opengl.hpp"
+#include "opengl_loader.hpp"
 
 //project
 #include "core.hpp"
@@ -20,13 +22,20 @@ using KalaKit::KalaWindow;
 using KalaKit::KalaInput;
 using KalaKit::KalaCrashHandler;
 using KalaKit::DebugType;
+using KalaKit::OpenGL;
+using KalaKit::OpenGLLoader;
 
 namespace Project
 {
 	void Core::Initialize()
 	{
 		KalaCrashHandler::Initialize();
+
 		KalaWindow::Initialize("window", 800, 600);
+
+		OpenGL::Initialize();
+		OpenGLLoader::LoadAllFunctions();
+
 		KalaInput::Initialize();
 
 		//KalaWindow::SetDebugType(DebugType::DEBUG_WINDOW_CORNER_EDGE);
@@ -34,8 +43,6 @@ namespace Project
 		
 	void Core::Update()
 	{
-		cout << "Reached render loop!\n";
-
 		while (!KalaWindow::ShouldClose())
 		{
 			KalaWindow::Update();

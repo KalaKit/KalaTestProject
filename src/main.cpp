@@ -18,8 +18,6 @@ int main()
 
 	Core::Initialize();
 	Core::Update();
-
-	cout << "Reached exit!\n";
 	
 	return 0;
 }
