@@ -38,7 +38,6 @@ namespace Project
 		hdc = GetDC(KalaWindow::window);
 
 		OpenGL::Initialize();
-		OpenGLLoader::LoadAllFunctions();
 
 		OpenGLLoader::glViewportPtr(0, 0, 800, 600);
 
