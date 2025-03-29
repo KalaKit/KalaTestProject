@@ -39,8 +39,9 @@ if (WIN32)
     set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
 endif()
 
-# Hub files
-set(INCLUDE_DIR "${CMAKE_SOURCE_DIR}/include")
+# Project files
+set(CORE_DIR "${CMAKE_SOURCE_DIR}/include/core")
+set(GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/include/graphics")
 
 # External files
 set(EXT_WINDOW_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaWindow")
@@ -79,9 +80,10 @@ endif()
 # Add your source files
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 	${CMAKE_SOURCE_DIR}/src/*.cpp
+	${CMAKE_SOURCE_DIR}/src/*/*.cpp
 )
 
-# Build as hub executable
+# Build as Project executable
 add_executable(TestProject ${SOURCE_FILES})
 
 if (WIN32)
@@ -95,13 +97,14 @@ set_target_properties(TestProject PROPERTIES OUTPUT_NAME "TestProject")
 target_compile_features(TestProject PRIVATE cxx_std_20)
 
 target_include_directories(TestProject PRIVATE  
-	${INCLUDE_DIR}
+	${CORE_DIR}
+	${GRAPHICS_DIR}
 	${EXT_WINDOW_DIR}
 	${EXT_CRASH_DIR}
 )
 
 # Apply all directories to target
-target_include_directories(TestProject PRIVATE ${HUB_INCLUDE_DIRS})
+target_include_directories(TestProject PRIVATE ${Project_INCLUDE_DIRS})
 
 if (WIN32)
 	target_link_libraries(TestProject PRIVATE 

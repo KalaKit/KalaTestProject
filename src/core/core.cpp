@@ -14,6 +14,7 @@
 
 //project
 #include "core.hpp"
+#include "triangle.hpp"
 
 using std::cout;
 using std::cin;
@@ -24,6 +25,7 @@ using KalaKit::KalaCrashHandler;
 using KalaKit::DebugType;
 using KalaKit::OpenGL;
 using KalaKit::OpenGLLoader;
+using Graphics::Triangle;
 
 namespace Project
 {
@@ -36,7 +38,12 @@ namespace Project
 		OpenGL::Initialize();
 		OpenGLLoader::LoadAllFunctions();
 
+		OpenGLLoader::glViewportPtr(0, 0, 800, 600);
+		OpenGLLoader::glDisablePtr(GL_DEPTH_TEST);
+
 		KalaInput::Initialize();
+
+		Triangle::Initialize();
 
 		//KalaWindow::SetDebugType(DebugType::DEBUG_WINDOW_CORNER_EDGE);
 	}
@@ -46,6 +53,8 @@ namespace Project
 		while (!KalaWindow::ShouldClose())
 		{
 			KalaWindow::Update();
+
+			Triangle::Render();
 		}
 	}
 }
