@@ -35,15 +35,22 @@ namespace Project
 
 		KalaWindow::Initialize("window", 800, 600);
 
+		hdc = GetDC(KalaWindow::window);
+
 		OpenGL::Initialize();
 		OpenGLLoader::LoadAllFunctions();
 
 		OpenGLLoader::glViewportPtr(0, 0, 800, 600);
-		OpenGLLoader::glDisablePtr(GL_DEPTH_TEST);
+
+		OpenGLLoader::glDisablePtr(GL_BLEND);      //no transparency
+		OpenGLLoader::glDisablePtr(GL_CULL_FACE);  //don't discard faces
+		OpenGLLoader::glDisablePtr(GL_DEPTH_TEST); //no depth test
 
 		KalaInput::Initialize();
 
 		Triangle::Initialize();
+
+		KalaWindow::SetRedrawCallback(RedrawCallback);
 
 		//KalaWindow::SetDebugType(DebugType::DEBUG_WINDOW_CORNER_EDGE);
 	}
@@ -52,9 +59,23 @@ namespace Project
 	{
 		while (!KalaWindow::ShouldClose())
 		{
-			KalaWindow::Update();
+			OpenGLLoader::glClearColorPtr(0.1f, 0.1f, 0.1f, 1.0f); //dark gray
+			OpenGLLoader::glClearPtr(GL_COLOR_BUFFER_BIT);
 
+			KalaWindow::Update();
 			Triangle::Render();
+
+			SwapBuffers(hdc);
 		}
+	}
+
+	void Core::RedrawCallback()
+	{
+		OpenGLLoader::glClearColorPtr(0.1f, 0.1f, 0.1f, 1.0f); //dark gray
+		OpenGLLoader::glClearPtr(GL_COLOR_BUFFER_BIT);
+
+		Triangle::Render();
+
+		SwapBuffers(hdc);
 	}
 }
