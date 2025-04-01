@@ -46,6 +46,7 @@ set(GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/include/graphics")
 # External files
 set(EXT_WINDOW_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaWindow")
 set(EXT_CRASH_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaCrashHandler")
+set(EXT_UTILS_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaUtils")
 
 # Add KalaWindow
 if (WIN32)
@@ -77,6 +78,21 @@ else()
 	endif()
 endif()
 
+# Add KalaUtils
+if (WIN32)
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+		set(UTILS_LIBRARY_PATH "${EXT_UTILS_DIR}/release/KalaUtils.lib")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(UTILS_LIBRARY_PATH "${EXT_UTILS_DIR}/debug/KalaUtilsD.lib")
+	endif()
+else()
+	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+		set(UTILS_LIBRARY_PATH "${EXT_UTILS_DIR}/release/libKalaUtils.so")
+	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+		set(UTILS_LIBRARY_PATH "${EXT_UTILS_DIR}/debug/libKalaUtilsD.so")
+	endif()
+endif()
+
 # Add your source files
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 	${CMAKE_SOURCE_DIR}/src/*.cpp
@@ -99,8 +115,11 @@ target_compile_features(TestProject PRIVATE cxx_std_20)
 target_include_directories(TestProject PRIVATE  
 	${CORE_DIR}
 	${GRAPHICS_DIR}
+	
+	#External headers
 	${EXT_WINDOW_DIR}
 	${EXT_CRASH_DIR}
+	${EXT_UTILS_DIR}
 )
 
 # Apply all directories to target
