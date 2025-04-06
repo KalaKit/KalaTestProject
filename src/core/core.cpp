@@ -34,6 +34,10 @@ namespace Project
 
 		hdc = GetDC(KalaWindow::window);
 
+		OpenGLLoader::glDisablePtr(GL_BLEND);      //no transparency
+		OpenGLLoader::glDisablePtr(GL_CULL_FACE);  //don't discard faces
+		OpenGLLoader::glDisablePtr(GL_DEPTH_TEST); //no depth test
+
 		Triangle::Initialize();
 
 		KalaWindow::SetRedrawCallback(RedrawCallback);

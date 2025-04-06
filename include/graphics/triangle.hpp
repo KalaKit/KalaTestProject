@@ -5,10 +5,14 @@
 
 #pragma once
 
+#include <memory>
+
 #include "shader.hpp"
 
 namespace Graphics
 {
+	using std::unique_ptr;
+
 	using KalaKit::Shader;
 
 	class Triangle
@@ -19,6 +23,6 @@ namespace Graphics
 	private:
 		static inline GLuint vao;
 		static inline GLuint vbo;
-		static inline Shader shader;
+		static inline unique_ptr<Shader> shader;
 	};
 }

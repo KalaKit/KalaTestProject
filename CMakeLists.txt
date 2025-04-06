@@ -119,7 +119,8 @@ target_include_directories(TestProject PRIVATE ${Project_INCLUDE_DIRS})
 if (WIN32)
 	target_link_libraries(TestProject PRIVATE 
 		${WINDOW_LIBRARY_PATH}
-		${CRASH_LIBRARY_PATH})
+		${CRASH_LIBRARY_PATH}
+		opengl32)
 else()
 	find_package(Wayland QUIET)
 	find_package(X11 QUIET)

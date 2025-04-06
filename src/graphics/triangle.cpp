@@ -9,6 +9,7 @@
 
 //external
 #include "opengl_loader.hpp"
+#include "glm/glm.hpp"
 
 //project
 #include "triangle.hpp"
@@ -17,6 +18,9 @@ using std::filesystem::path;
 using std::filesystem::current_path;
 using std::string;
 using std::cout;
+using std::hex;
+using glm::vec4;
+using std::make_unique;
 
 using KalaKit::OpenGLLoader;
 
@@ -58,9 +62,9 @@ namespace Graphics
 		string vert = (current_path() / "files" / "shaders" / "tri.vert").string();
 		string frag = (current_path() / "files" / "shaders" / "tri.frag").string();
 		
-		shader = Shader(vert, frag);
+		shader = make_unique<Shader>(vert, frag);
 
-		if (!shader.IsValid())
+		if (!shader->IsValid())
 		{
 			cout << "Error: Triangle shader failed to compile/link!\n";
 		}
@@ -69,7 +73,9 @@ namespace Graphics
 	void Triangle::Render()
 	{
 		//use the compiled shader program
-		shader.Use();
+		shader->Use();
+
+		shader->SetVec4("u_Color", vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
 		//bind the VAO
 		OpenGLLoader::glBindVertexArrayPtr(vao);
