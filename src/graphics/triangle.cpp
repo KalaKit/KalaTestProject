@@ -56,14 +56,13 @@ namespace Graphics
 
 		//create shader
 		string vert = (current_path() / "files" / "shaders" / "tri.vert").string();
-		string frag = (current_path() / "files" / "shaders" / "frag.vert").string();
+		string frag = (current_path() / "files" / "shaders" / "tri.frag").string();
 		
 		shader = Shader(vert, frag);
 
 		if (!shader.IsValid())
 		{
 			cout << "Error: Triangle shader failed to compile/link!\n";
-			return;
 		}
 	}
 

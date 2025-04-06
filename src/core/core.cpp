@@ -17,8 +17,8 @@ using std::cout;
 using std::cin;
 
 using KalaKit::KalaWindow;
-using KalaKit::DebugType;
 using KalaKit::OpenGLLoader;
+using KalaKit::DebugType;
 using Graphics::Triangle;
 
 namespace Project
