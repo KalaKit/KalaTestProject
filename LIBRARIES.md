@@ -10,5 +10,5 @@ Full list of libraries:
 - [KalaInput - Input manager library for Windows](https://github.com/KalaKit/KalaInput)
 - [KalaCrashHandler](https://github.com/KalaKit/KalaCrashHandler)
 
-*Not created by me*
+*Not created by greenlaser*
 - [magic_enum - Simplifies enum-string operations](https://github.com/Neargye/magic_enum)
