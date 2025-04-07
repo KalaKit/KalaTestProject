@@ -1,7 +1,0 @@
-Original repository link:
-https://github.com/KalaKit/KalaWindow
-
-Changes:
-- used build_windows_release.bat to make KalaWindow.dll and KalaWindow.lib and copied them into new empty folder release
-- used build_debug.bat to make KalaWindowD.dll and KalaWindowD.lib and copied them into new empty folder debug
-- copied window.hpp, input.hpp and magic_enum.hpp to KalaWindow root folder
