@@ -5,12 +5,18 @@
 
 #pragma once
 
+#ifdef KALAKIT_WINDOWS
 #include <Windows.h>
+#endif
+
+//kalawindow
+#include "preprocessors.hpp"
 
 namespace KalaKit
 {
 	enum class Key
 	{
+#ifdef KALAKIT_WINDOWS
 		// Letters
 		A = 'A', B = 'B', C = 'C', D = 'D', E = 'E',
 		F = 'F', G = 'G', H = 'H', I = 'I', J = 'J',
@@ -133,6 +139,7 @@ namespace KalaKit
 		BrowserSearch = VK_BROWSER_SEARCH,
 		BrowserFavorites = VK_BROWSER_FAVORITES,
 		BrowserHome = VK_BROWSER_HOME
+#endif
 	};
 
 	/// <summary>
@@ -284,6 +291,7 @@ namespace KalaKit
 	};
 
 	//User response from the popup
+#ifdef KALAKIT_WINDOWS
 	enum class PopupResult
 	{
 		POPUP_RESULT_NONE = 0,          // No response or unknown
@@ -293,4 +301,15 @@ namespace KalaKit
 		POPUP_RESULT_NO = IDNO,         // User clicked No
 		POPUP_RESULT_RETRY = IDRETRY    // User clicked Retry
 	};
+#else
+	enum class PopupResult
+	{
+		POPUP_RESULT_NONE = 0,          // No response or unknown
+		POPUP_RESULT_OK = 1,            // User clicked OK
+		POPUP_RESULT_CANCEL = 2,        // User clicked Cancel
+		POPUP_RESULT_YES = 3,           // User clicked Yes
+		POPUP_RESULT_NO = 4,            // User clicked No
+		POPUP_RESULT_RETRY = 5          // User clicked Retry
+	};
+#endif
 }

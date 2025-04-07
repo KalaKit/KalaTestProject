@@ -5,18 +5,21 @@
 
 #pragma once
 
+#ifdef KALAKIT_WINDOWS
 #include <Windows.h>
+#endif
 
 namespace Project
 {
 	class Core
-
 	{
 	public:
 		static void Initialize();
 		static void Update();
 		static void RedrawCallback();
 	private:
+#ifdef KALAKIT_WINDOWS
 		static inline HDC hdc;
+#endif
 	};
 }

@@ -5,25 +5,98 @@
 
 #pragma once
 
-#include <Windows.h>
-#include <GL/gl.h>
 #include <cstdint>
 #include <cstddef>
-
-#ifndef APIENTRY
-    #define APIENTRY __stdcall
+#ifdef KALAKIT_WINDOWS
+    #include <Windows.h>
 #endif
+#include <GL/gl.h>
 
-#ifndef APIENTRYP
-    #define APIENTRYP APIENTRY *
-#endif
+//kalawindow
+#include "preprocessors.hpp"
 
-#ifndef WGLENTRY
-    #define WGLENTRY __stdcall
-#endif
+#ifdef KALAKIT_WINDOWS
+    #ifndef APIENTRY
+        #define APIENTRY __stdcall
+    #endif
 
-#ifndef WGLENTRYP
-    #define WGLENTRYP WGLENTRY *
+    #ifndef APIENTRYP
+        #define APIENTRYP APIENTRY *
+    #endif
+
+    #ifndef WGLENTRY
+        #define WGLENTRY __stdcall
+    #endif
+
+    #ifndef WGLENTRYP
+        #define WGLENTRYP WGLENTRY *
+    #endif
+
+    #ifndef WGL_CONTEXT_MAJOR_VERSION_ARB
+        #define WGL_CONTEXT_MAJOR_VERSION_ARB 0x2091
+    #endif
+
+    #ifndef WGL_CONTEXT_MINOR_VERSION_ARB
+        #define WGL_CONTEXT_MINOR_VERSION_ARB 0x2092
+    #endif
+
+    #ifndef WGL_CONTEXT_PROFILE_MASK_ARB
+        #define WGL_CONTEXT_PROFILE_MASK_ARB 0x9126
+    #endif
+
+    #ifndef WGL_CONTEXT_CORE_PROFILE_BIT_ARB
+        #define WGL_CONTEXT_CORE_PROFILE_BIT_ARB 0x00000001
+    #endif
+#else
+    #ifndef APIENTRY
+        #define APIENTRY
+    #endif
+
+    #ifndef APIENTRYP
+        #define APIENTRYP *
+    #endif
+
+    #ifndef WGLENTRY
+        #define WGLENTRY
+    #endif
+
+    #ifndef WGLENTRYP
+        #define WGLENTRYP *
+    #endif
+
+    #ifdef KALAKIT_WAYLAND
+        #ifndef EGL_CONTEXT_MAJOR_VERSION
+            #define EGL_CONTEXT_MAJOR_VERSION 0x3098
+        #endif
+
+        #ifndef EGL_CONTEXT_MINOR_VERSION
+            #define EGL_CONTEXT_MINOR_VERSION 0x3099
+        #endif
+
+        #ifndef EGL_CONTEXT_OPENGL_PROFILE_MASK
+            #define EGL_CONTEXT_OPENGL_PROFILE_MASK 0x30FD
+        #endif
+
+        #ifndef EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT
+            #define EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT 0x00000001
+        #endif
+    #elif KALAKIT_X11
+        #ifndef GLX_CONTEXT_MAJOR_VERSION_ARB
+            #define GLX_CONTEXT_MAJOR_VERSION_ARB 0x2091
+        #endif
+
+        #ifndef GLX_CONTEXT_MINOR_VERSION_ARB
+            #define GLX_CONTEXT_MINOR_VERSION_ARB 0x2092
+        #endif
+
+        #ifndef GLX_CONTEXT_PROFILE_MASK_ARB
+            #define GLX_CONTEXT_PROFILE_MASK_ARB 0x9126
+        #endif
+
+        #ifndef GLX_CONTEXT_CORE_PROFILE_BIT_ARB
+            #define GLX_CONTEXT_CORE_PROFILE_BIT_ARB 0x00000001
+        #endif
+    #endif
 #endif
 
 //opengl error codes
@@ -55,7 +128,9 @@
 #define GL_CURRENT_PROGRAM   0x8B8D
 #define GL_PROGRAM_INPUT     0x92E3
 #define GL_PROGRAM_OUTPUT    0x92E4
+#ifndef GL_ACTIVE_RESOURCES
 #define GL_ACTIVE_RESOURCES  0x929F
+#endif
 #define GL_NAME_LENGTH       0x92F9
 #define GL_TYPE              0x92FA
 #define GL_LOCATION          0x930E
@@ -113,6 +188,7 @@ typedef ptrdiff_t       GLsizeiptr;
 
 #endif // GL_TYPES_DEFINED
 
+#ifdef KALAKIT_WINDOWS
 //wgl extension typedefs
 
 typedef HGLRC(WINAPI* PFNWGLCREATECONTEXTATTRIBSARBPROC)(
@@ -126,6 +202,7 @@ typedef BOOL(WINAPI* PFNWGLCHOOSEPIXELFORMATARBPROC)(
 	UINT,
 	int*,
 	UINT*);
+#endif
 
 //geometry
 

@@ -5,16 +5,8 @@
 
 #pragma once
 
-#ifdef _WIN32
-	#ifdef KALAWINDOW_DLL_EXPORT
-		#define KALAWINDOW_API __declspec(dllexport)
-	#else
-		#define KALAWINDOW_API __declspec(dllimport)
-	#endif
-#else
-	#define KALAWINDOW_API
-#endif
-
+//kalawindow
+#include "preprocessors.hpp"
 #include "opengl_typedefs.hpp"
 
 namespace KalaKit
@@ -45,7 +37,7 @@ namespace KalaKit
 		}
 
 	private:
-		static inline HGLRC realContext;
+		static inline OPENGLCONTEXT realContext;
 
 		/// <summary>
 		/// Checks whether user has OpenGL 3.3 or higher.

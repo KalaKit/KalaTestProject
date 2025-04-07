@@ -5,19 +5,13 @@
 
 #pragma once
 
-#ifdef _WIN32
-	#ifdef KALAWINDOW_DLL_EXPORT
-		#define KALAWINDOW_API __declspec(dllexport)
-	#else
-		#define KALAWINDOW_API __declspec(dllimport)
-	#endif
-#else
-	#define KALAWINDOW_API
+#include <string>
+#ifdef KALAKIT_WINDOWS
+#include <Windows.h>
 #endif
 
-#include <Windows.h>
-#include <string>
-
+//kalawindow
+#include "preprocessors.hpp"
 #include "enums.hpp"
 
 namespace KalaKit
@@ -27,8 +21,10 @@ namespace KalaKit
 	class KALAWINDOW_API KalaWindow
 	{
 	public:
-		static inline HWND window;
+		static inline WINDOW window;
+#ifdef KALAKIT_WINDOWS
 		static inline WNDPROC proc;
+#endif
 
 		/// <summary>
 		/// Title of the warning popup when user wants to exit
@@ -124,7 +120,7 @@ namespace KalaKit
 		/// <summary>
 		/// Gets the position of the window.
 		/// </summary>
-		static POINT GetWindowPosition();
+		static POS GetWindowPosition();
 		/// <summary>
 		/// Sets the position of the window.
 		/// </summary>
@@ -133,7 +129,7 @@ namespace KalaKit
 		/// <summary>
 		/// Gets the total outer size (includes borders and top bar)
 		/// </summary>
-		static POINT GetWindowFullSize();
+		static POS GetWindowFullSize();
 		/// <summary>
 		/// Sets the total outer size of the window (includes borders and top bar)
 		/// </summary>
@@ -142,7 +138,7 @@ namespace KalaKit
 		/// <summary>
 		/// Gets the drawable/client area (without borders and top bar)
 		/// </summary>
-		static POINT GetWindowContentSize();
+		static POS GetWindowContentSize();
 		/// <summary>
 		/// Sets the drawable/client area (without borders and top bar)
 		/// </summary>
@@ -151,11 +147,11 @@ namespace KalaKit
 		/// <summary>
 		/// Get window maximum allowed size.
 		/// </summary>
-		static POINT GetWindowMaxSize();
+		static POS GetWindowMaxSize();
 		/// <summary>
 		/// Get window minimum allowed size.
 		/// </summary>
-		static POINT GetWindowMinSize();
+		static POS GetWindowMinSize();
 		/// <summary>
 		/// Set window minimum and maximum allowed size.
 		/// </summary>
@@ -232,6 +228,7 @@ namespace KalaKit
 		/// </summary>
 		static inline bool isWindowBorderless = false;
 
+#ifdef KALAKIT_WINDOWS
 		/// <summary>
 		/// Store original window flags when switching 
 		/// between borderless and non-borderless
@@ -242,6 +239,7 @@ namespace KalaKit
 		/// when switching between borderless and non-borderless
 		/// </summary>
 		static inline WINDOWPLACEMENT originalPlacement = { sizeof(WINDOWPLACEMENT) };
+#endif
 
 		static inline int maxWidth = 7680;
 		static inline int maxHeight = 4320;

@@ -5,18 +5,13 @@
 
 #pragma once
 
-#ifdef _WIN32
-	#ifdef KALAWINDOW_DLL_EXPORT
-		#define KALAWINDOW_API __declspec(dllexport)
-	#else
-		#define KALAWINDOW_API __declspec(dllimport)
-	#endif
-#else
-	#define KALAWINDOW_API
+#include <string>
+#ifdef KALAKIT_WINDOWS
+#include <Windows.h>
 #endif
 
-#include <Windows.h>
-#include <string>
+//kalawindow
+#include "preprocessors.hpp"
 
 namespace KalaKit
 {
@@ -24,7 +19,14 @@ namespace KalaKit
 
 	class KALAWINDOW_API MessageLoop
 	{
+#ifdef KALAKIT_WINDOWS
+
+		//
+		// WINDOWS MESSAGE LOOP
+		//
+
 	public:
+
 		static LRESULT CALLBACK WindowProcCallback(
 			HWND hwnd,
 			UINT msg,
@@ -41,5 +43,23 @@ namespace KalaKit
 			UINT msg,
 			WPARAM wParam,
 			LPARAM lParam);
+
+#elif KALAKIT_X11
+
+		//
+		// X11 MESSAGE LOOP
+		//
+
+
+
+#elif KALAKIT_WAYLAND
+
+		//
+		// WAYLAND MESSAGE LOOP
+		//
+
+
+
+#endif
 	};
 }

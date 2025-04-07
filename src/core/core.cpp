@@ -32,7 +32,9 @@ namespace Project
 			return;
 		}
 
+#ifdef KALAKIT_WINDOWS
 		hdc = GetDC(KalaWindow::window);
+#endif
 
 		OpenGLLoader::glDisablePtr(GL_BLEND);      //no transparency
 		OpenGLLoader::glDisablePtr(GL_CULL_FACE);  //don't discard faces
@@ -60,6 +62,8 @@ namespace Project
 
 		Triangle::Render();
 
+#ifdef KALAKIT_WINDOWS
 		SwapBuffers(hdc);
+#endif
 	}
 }

@@ -17,6 +17,45 @@ set(PROJECT_VERSION "${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT
 
 project("TestProject" VERSION ${PROJECT_VERSION})
 
+add_executable(TestProject "")
+
+# Set OS global type
+if (WIN32)
+    set(KALAKIT_WINDOWS TRUE)
+    target_compile_definitions(TestProject PRIVATE KALAKIT_WINDOWS)
+elseif(UNIX)
+    find_package(X11 QUIET)
+
+    include(FindPkgConfig)
+	pkg_check_modules(WAYLAND_CLIENT QUIET wayland-client)
+
+	message(STATUS "X11_FOUND = ${X11_FOUND}")
+	message(STATUS "WAYLAND_CLIENT_FOUND = ${WAYLAND_CLIENT_FOUND}")
+
+    if (WAYLAND_CLIENT_FOUND)
+		set(KALAKIT_WAYLAND TRUE)
+		message(STATUS "[KALAKIT] Using Wayland backend")
+		target_compile_definitions(TestProject PRIVATE KALAKIT_WAYLAND)
+	elseif (X11_FOUND)
+		set(KALAKIT_X11 TRUE)
+		message(STATUS "[KALAKIT] Using X11 backend")
+		target_compile_definitions(TestProject PRIVATE KALAKIT_X11)
+	else()
+		message(FATAL_ERROR "[KALAKIT] No backend found! Must support Wayland or X11.")
+	endif()
+else()
+	message(FATAL_ERROR "Unsupported OS version! Must be WIN32 or UNIX!")
+endif()
+
+# Set build global type
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	set(KALAKIT_DEBUG TRUE)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+	set(KALAKIT_RELEASE TRUE)
+else()
+	message(FATAL_ERROR "Unknown CMAKE_BUILD_TYPE: '${CMAKE_BUILD_TYPE}'! Must be Debug, Release, or RelWithDebInfo.")
+endif()
+
 if (MSVC)
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDebug")
@@ -26,7 +65,7 @@ if (MSVC)
 endif()
 
 # Specify resource file for Windows
-if (WIN32)
+if (KALAKIT_WINDOWS)
     set(RESOURCE_FILE "${CMAKE_SOURCE_DIR}/files/icon.rc")
 endif()
 
@@ -37,50 +76,34 @@ set(GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/include/graphics")
 # External files
 set(EXT_WINDOW_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaWindow")
 set(EXT_CRASH_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaCrashHandler")
-set(EXT_UTILS_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaUtils")
 
 # Add KalaWindow
-if (WIN32)
-	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+if (KALAKIT_WINDOWS)
+	if(KALAKIT_RELEASE)
 		set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/release/KalaWindow.lib")
-	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	else()
 		set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/debug/KalaWindowD.lib")
 	endif()
 else()
-	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+	if(KALAKIT_RELEASE)
 		set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/release/libKalaWindow.so")
-	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	else()
 		set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/debug/libKalaWindowD.so")
 	endif()
 endif()
 
 # Add KalaCrashHandler
-if (WIN32)
-	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+if (KALAKIT_WINDOWS)
+	if(KALAKIT_RELEASE)
 		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/KalaCrashHandler.lib")
-	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	else()
 		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/KalaCrashHandlerD.lib")
 	endif()
 else()
-	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+	if(KALAKIT_RELEASE)
 		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/libKalaCrashHandler.so")
-	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	else()
 		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/libKalaCrashHandlerD.so")
-	endif()
-endif()
-
-# Add KalaUtils
-if (WIN32)
-	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-		set(UTILS_LIBRARY_PATH "${EXT_UTILS_DIR}/release/KalaUtils.lib")
-	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(UTILS_LIBRARY_PATH "${EXT_UTILS_DIR}/debug/KalaUtilsD.lib")
-	endif()
-else()
-	if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-		set(UTILS_LIBRARY_PATH "${EXT_UTILS_DIR}/release/libKalaUtils.so")
-	elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-		set(UTILS_LIBRARY_PATH "${EXT_UTILS_DIR}/debug/libKalaUtilsD.so")
 	endif()
 endif()
 
@@ -91,9 +114,9 @@ file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 )
 
 # Build as Project executable
-add_executable(TestProject ${SOURCE_FILES})
+target_sources(TestProject PRIVATE ${SOURCE_FILES})
 
-if (WIN32)
+if (KALAKIT_WINDOWS)
 	set_source_files_properties(${RESOURCE_FILE} PROPERTIES LANGUAGE RC)
 	target_sources(TestProject PRIVATE ${RESOURCE_FILE})
 endif()
@@ -110,35 +133,41 @@ target_include_directories(TestProject PRIVATE
 	#External headers
 	${EXT_WINDOW_DIR}
 	${EXT_CRASH_DIR}
-	${EXT_UTILS_DIR}
 )
 
 # Apply all directories to target
 target_include_directories(TestProject PRIVATE ${Project_INCLUDE_DIRS})
 
-if (WIN32)
-	target_link_libraries(TestProject PRIVATE 
-		${WINDOW_LIBRARY_PATH}
+if (KALAKIT_WINDOWS)
+	# Define as Windows
+	target_compile_definitions(TestProject PRIVATE KALAKIT_WINDOWS=1)
+
+    target_link_libraries(TestProject PRIVATE
 		${CRASH_LIBRARY_PATH}
+		${WINDOW_LIBRARY_PATH}
 		opengl32)
 else()
-	find_package(Wayland QUIET)
-	find_package(X11 QUIET)
-	if (Wayland_FOUND)
-		target_link_libraries(TestProject PRIVATE 
-			${WINDOW_LIBRARY_PATH}
+	if (KALAKIT_WAYLAND)
+		# Define as Wayland
+		target_compile_definitions(TestProject PRIVATE KALAKIT_WAYLAND=1)
+
+		target_link_libraries(TestProject PRIVATE
 			${CRASH_LIBRARY_PATH}
-			Wayland::Client)
-	elseif (X11_FOUND)
-		target_link_libraries(TestProject PRIVATE 
 			${WINDOW_LIBRARY_PATH}
+			${WAYLAND_CLIENT_LIBRARIES})
+	else()
+		# Define as X11
+		target_compile_definitions(TestProject PRIVATE KALAKIT_X11=1)
+
+		target_link_libraries(TestProject PRIVATE
 			${CRASH_LIBRARY_PATH}
+			${WINDOW_LIBRARY_PATH}
 			${X11_LIBRARIES})
 	endif()
 endif()
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-	# Set the subsystem to WINDOWS
+if(KALAKIT_RELEASE)
+# Set the subsystem to WINDOWS
 	set_target_properties(TestProject PROPERTIES
 		WIN32_EXECUTABLE TRUE
 	)
@@ -164,9 +193,9 @@ add_custom_command(TARGET TestProject POST_BUILD
 )
 
 # Copy all DLLs to the install directory after build
-if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+if(KALAKIT_RELEASE)
 	set(DLL_ORIGIN_DIR "${CMAKE_SOURCE_DIR}/files/external dlls/release")
-elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
+else()
 	set(DLL_ORIGIN_DIR "${CMAKE_SOURCE_DIR}/files/external dlls/debug")
 endif()
 set(DLL_TARGET_DIR "$<TARGET_FILE_DIR:TestProject>")
@@ -182,7 +211,7 @@ foreach(DLL_FILE ${DLL_FILES})
     )
 endforeach()
 
-set(COPY_TARGETS LICENSE.md README.md LIBRARIES.md)
+set(COPY_TARGETS LICENSE.md LIBRARIES.md)
 foreach(FILE ${COPY_TARGETS})
   add_custom_command(TARGET TestProject POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
