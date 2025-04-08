@@ -1,4 +1,4 @@
 # Ignored files and folders
-
 .vs/
-out/
+build-release/
+build-debug/
