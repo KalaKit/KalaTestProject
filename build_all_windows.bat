@@ -1,18 +1,38 @@
 @echo off
 
-echo Building debug...
+set "PROJECT_ROOT=%~dp0"
+cd "%PROJECT_ROOT%"
+
+echo =====================================
+echo [INFO] Building test project in Release mode...
+echo =====================================
 echo.
 
-cmd /c build_windows.bat cmake debug
+cmd /c "build_windows_release.bat"
+if errorlevel 1 (
+    echo [ERROR] Release build failed.
+    pause
+    exit /b 1
+)
 
 echo.
-echo Building release...
+echo =====================================
+echo [INFO] Building test project in Debug mode...
+echo =====================================
 echo.
 
-cmd /c build_windows.bat cmake release
+cmd /c "build_windows_debug.bat"
+if errorlevel 1 (
+    echo [ERROR] Debug build failed.
+    pause
+    exit /b 1
+)
 
 echo.
-echo Successfully built TestProject!
+echo =====================================
+echo [SUCCESS] Finished building and installing test project!
+echo =====================================
+echo.
 
 pause
 exit /b 0
