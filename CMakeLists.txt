@@ -28,9 +28,16 @@ elseif(UNIX)
 
     include(FindPkgConfig)
 	pkg_check_modules(WAYLAND_CLIENT QUIET wayland-client)
+	pkg_check_modules(WAYLAND_EGL QUIET wayland-egl)
+	pkg_check_modules(EGL QUIET egl)
+
+	find_package(OpenGL REQUIRED)
+	message(STATUS "OpenGL_FOUND: ${OpenGL_FOUND}")
 
 	message(STATUS "X11_FOUND = ${X11_FOUND}")
 	message(STATUS "WAYLAND_CLIENT_FOUND = ${WAYLAND_CLIENT_FOUND}")
+	message(STATUS "WAYLAND_EGL_FOUND = ${WAYLAND_EGL_FOUND}")
+	message(STATUS "EGL_FOUND = ${EGL_FOUND}")
 
     if (WAYLAND_CLIENT_FOUND)
 		set(KALAKIT_WAYLAND TRUE)
@@ -86,9 +93,9 @@ if (KALAKIT_WINDOWS)
 	endif()
 else()
 	if(KALAKIT_RELEASE)
-		set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/release/libKalaWindow.so")
+		set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/release/libKalaWindow.a")
 	else()
-		set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/debug/libKalaWindowD.so")
+		set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/debug/libKalaWindowD.a")
 	endif()
 endif()
 
@@ -101,9 +108,9 @@ if (KALAKIT_WINDOWS)
 	endif()
 else()
 	if(KALAKIT_RELEASE)
-		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/libKalaCrashHandler.so")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/libKalaCrashHandler.a")
 	else()
-		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/libKalaCrashHandlerD.so")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/libKalaCrashHandlerD.a")
 	endif()
 endif()
 
@@ -126,43 +133,51 @@ set_target_properties(TestProject PROPERTIES OUTPUT_NAME "TestProject")
 
 target_compile_features(TestProject PRIVATE cxx_std_20)
 
-target_include_directories(TestProject PRIVATE  
+target_include_directories(TestProject PRIVATE
 	${CORE_DIR}
 	${GRAPHICS_DIR}
-	
+
 	#External headers
 	${EXT_WINDOW_DIR}
 	${EXT_CRASH_DIR}
 )
-
-# Apply all directories to target
-target_include_directories(TestProject PRIVATE ${Project_INCLUDE_DIRS})
+if (KALAKIT_WAYLAND)
+	target_include_directories(TestProject PRIVATE
+		${WAYLAND_CLIENT_INCLUDE_DIRS}
+		${WAYLAND_EGL_INCLUDE_DIRS}
+		${EGL_INCLUDE_DIRS}
+	)
+elseif(KALAKIT_X11)
+	target_include_directories(TestProject PRIVATE
+		${EGL_INCLUDE_DIRS}
+	)
+endif()
 
 if (KALAKIT_WINDOWS)
-	# Define as Windows
-	target_compile_definitions(TestProject PRIVATE KALAKIT_WINDOWS=1)
-
-    target_link_libraries(TestProject PRIVATE
+	target_link_libraries(TestProject PRIVATE
+		opengl32
 		${CRASH_LIBRARY_PATH}
 		${WINDOW_LIBRARY_PATH}
-		opengl32)
+	)
 else()
 	if (KALAKIT_WAYLAND)
-		# Define as Wayland
-		target_compile_definitions(TestProject PRIVATE KALAKIT_WAYLAND=1)
-
 		target_link_libraries(TestProject PRIVATE
-			${CRASH_LIBRARY_PATH}
+			OpenGL::GL
+			EGL
 			${WINDOW_LIBRARY_PATH}
-			${WAYLAND_CLIENT_LIBRARIES})
+			${CRASH_LIBRARY_PATH}
+			${WAYLAND_CLIENT_LIBRARIES}
+			${WAYLAND_EGL_LIBRARIES}
+			${EGL_LIBRARIES}
+		)
 	else()
-		# Define as X11
-		target_compile_definitions(TestProject PRIVATE KALAKIT_X11=1)
-
 		target_link_libraries(TestProject PRIVATE
-			${CRASH_LIBRARY_PATH}
+			OpenGL::GL
+			EGL
 			${WINDOW_LIBRARY_PATH}
-			${X11_LIBRARIES})
+			${CRASH_LIBRARY_PATH}
+			${X11_LIBRARIES}
+		)
 	endif()
 endif()
 
@@ -187,9 +202,10 @@ install(TARGETS TestProject DESTINATION ${CMAKE_INSTALL_BINDIR})
 # Copy "files" directory to the install directory after build
 add_custom_command(TARGET TestProject POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove_directory
-    $<TARGET_FILE_DIR:TestProject>/files
+		"$<TARGET_FILE_DIR:TestProject>/files"
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/files $<TARGET_FILE_DIR:TestProject>/files
+		"${CMAKE_SOURCE_DIR}/files"
+		"$<TARGET_FILE_DIR:TestProject>/files"
 )
 
 # Copy all DLLs to the install directory after build
@@ -201,13 +217,13 @@ endif()
 set(DLL_TARGET_DIR "$<TARGET_FILE_DIR:TestProject>")
 
 file(GLOB DLL_FILES "${DLL_ORIGIN_DIR}/*")
-	
+
 foreach(DLL_FILE ${DLL_FILES})
     get_filename_component(DLL_NAME ${DLL_FILE} NAME)
     add_custom_command(TARGET TestProject POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy 
-            ${DLL_FILE} 
-            ${DLL_TARGET_DIR}/${DLL_NAME}
+        COMMAND ${CMAKE_COMMAND} -E copy
+            "${DLL_FILE}"
+            "${DLL_TARGET_DIR}/${DLL_NAME}"
     )
 endforeach()
 
@@ -215,10 +231,10 @@ set(COPY_TARGETS LICENSE.md LIBRARIES.md)
 foreach(FILE ${COPY_TARGETS})
   add_custom_command(TARGET TestProject POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E remove
-	$<TARGET_FILE_DIR:TestProject>/${FILE}
+		"$<TARGET_FILE_DIR:TestProject>/${FILE}"
 	COMMAND ${CMAKE_COMMAND} -E copy
-	${CMAKE_SOURCE_DIR}/${FILE}
-	$<TARGET_FILE_DIR:TestProject>/${FILE}
+		"${CMAKE_SOURCE_DIR}/${FILE}"
+		"$<TARGET_FILE_DIR:TestProject>/${FILE}"
   )
 endforeach()
 

@@ -7,6 +7,7 @@
 
 //external
 #include "window.hpp"
+#include "opengl.hpp"
 #include "opengl_loader.hpp"
 
 //project
@@ -17,6 +18,7 @@ using std::cout;
 using std::cin;
 
 using KalaKit::KalaWindow;
+using KalaKit::OpenGL;
 using KalaKit::OpenGLLoader;
 using KalaKit::DebugType;
 using Graphics::Triangle;
@@ -25,34 +27,42 @@ namespace Project
 {
 	void Core::Initialize()
 	{
-		bool initialized = KalaWindow::Initialize("window", 800, 600);
+		bool initializeOpenGL = false;
+		bool initialized = KalaWindow::Initialize(
+			"window", 
+			800, 
+			600,
+			initializeOpenGL);
 		if (!initialized)
 		{
 			cout << "Error: Failed to initialize KalaWindow!\n";
 			return;
 		}
 
-#ifdef KALAKIT_WINDOWS
-		hdc = GetDC(KalaWindow::window);
-#endif
-
-		OpenGLLoader::glDisablePtr(GL_BLEND);      //no transparency
-		OpenGLLoader::glDisablePtr(GL_CULL_FACE);  //don't discard faces
-		OpenGLLoader::glDisablePtr(GL_DEPTH_TEST); //no depth test
-
-		Triangle::Initialize();
-
-		KalaWindow::SetRedrawCallback(RedrawCallback);
+		if (initializeOpenGL)
+		{
+			OpenGLLoader::glDisablePtr(GL_BLEND);      //no transparency
+			OpenGLLoader::glDisablePtr(GL_CULL_FACE);  //don't discard faces
+			OpenGLLoader::glDisablePtr(GL_DEPTH_TEST); //no depth test
+	
+			Triangle::Initialize();
+	
+			KalaWindow::SetRedrawCallback(RedrawCallback);
+		}
 	}
 		
 	void Core::Update()
 	{
+		cout << "!!!!! UPDATE START !!!!!\n";
+
 		while (!KalaWindow::ShouldClose())
 		{
-			KalaWindow::Update();
+			//KalaWindow::Update();
 
-			RedrawCallback();
+			//RedrawCallback();
 		}
+
+		cout << "!!!!! UPDATE END !!!!!\n";
 	}
 
 	void Core::RedrawCallback()
@@ -62,8 +72,6 @@ namespace Project
 
 		Triangle::Render();
 
-#ifdef KALAKIT_WINDOWS
-		SwapBuffers(hdc);
-#endif
+		KalaWindow::SwapBuffers(OpenGL::context);
 	}
 }

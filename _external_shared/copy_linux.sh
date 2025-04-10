@@ -21,12 +21,18 @@ DEBUG_DLLS="${ROOT_DIR}/../files/external dlls/debug"
 # Copy release dlls
 
 cp -f "$CRASH_RELEASE" "$RELEASE_DLLS"
-cp -f "$WINDOW_RELEASE" "$RELEASE_DLLS"
+echo "Copied $CRASH_RELEASE to $RELEASE_DLLS"
 
-# Copy target dlls
+cp -f "$WINDOW_RELEASE" "$RELEASE_DLLS"
+echo "Copied $WINDOW_RELEASE to $RELEASE_DLLS"
+
+# Copy debug dlls
 
 cp -f "$CRASH_DEBUG" "$DEBUG_DLLS"
+echo "Copied $CRASH_DEBUG to $DEBUG_DLLS"
+
 cp -f "$WINDOW_DEBUG" "$DEBUG_DLLS"
+echo "Copied $WINDOW_DEBUG to $DEBUG_DLLS"
 
 echo ""
 echo "Finished copying DLLs!"
