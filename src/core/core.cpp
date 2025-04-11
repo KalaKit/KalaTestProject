@@ -57,7 +57,7 @@ namespace Project
 
 		while (!KalaWindow::ShouldClose())
 		{
-			//KalaWindow::Update();
+			KalaWindow::Update();
 
 			//RedrawCallback();
 		}
