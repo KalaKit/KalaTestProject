@@ -42,11 +42,15 @@ elseif(UNIX)
     if (WAYLAND_CLIENT_FOUND)
 		set(KALAKIT_WAYLAND TRUE)
 		message(STATUS "[KALAKIT] Using Wayland backend")
-		target_compile_definitions(TestProject PRIVATE KALAKIT_WAYLAND)
+		target_compile_definitions(TestProject PRIVATE
+			KALAKIT_WAYLAND
+		)
 	elseif (X11_FOUND)
 		set(KALAKIT_X11 TRUE)
 		message(STATUS "[KALAKIT] Using X11 backend")
-		target_compile_definitions(TestProject PRIVATE KALAKIT_X11)
+		target_compile_definitions(TestProject PRIVATE
+			KALAKIT_X11
+		)
 	else()
 		message(FATAL_ERROR "[KALAKIT] No backend found! Must support Wayland or X11.")
 	endif()

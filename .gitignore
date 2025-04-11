@@ -1,4 +1,5 @@
 # Ignored files and folders
 .vs/
+.vscode/
 build-release/
 build-debug/
