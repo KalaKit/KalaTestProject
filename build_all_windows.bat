@@ -4,6 +4,18 @@ set "PROJECT_ROOT=%~dp0"
 cd "%PROJECT_ROOT%"
 
 echo =====================================
+echo [INFO] Copying external files...
+echo =====================================
+echo.
+
+cmd /c "_external_shared\copy_windows.bat"
+if errorlevel 1 (
+    echo [ERROR] Copy failed.
+    pause
+    exit /b 1
+)
+
+echo =====================================
 echo [INFO] Building test project in Release mode...
 echo =====================================
 echo.

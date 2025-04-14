@@ -87,7 +87,6 @@ set(GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/include/graphics")
 # External files
 set(EXT_WINDOW_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaWindow")
 set(EXT_CRASH_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaCrashHandler")
-set(EXT_XDG_DIR "${CMAKE_SOURCE_DIR}/_external_shared/xdg-shell")
 
 # Add KalaWindow
 if (KALAKIT_WINDOWS)
@@ -116,15 +115,6 @@ else()
 		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/libKalaCrashHandler.a")
 	else()
 		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/libKalaCrashHandlerD.a")
-	endif()
-endif()
-
-# Add xdg-shell
-if (KALAKIT_WAYLAND)
-	if(KALAKIT_RELEASE)
-		set(XDG_LIBRARY_PATH "${EXT_XDG_DIR}/release/libxdg-shell.a")
-	else()
-		set(XDG_LIBRARY_PATH "${EXT_XDG_DIR}/debug/libxdg-shellD.a")
 	endif()
 endif()
 
@@ -157,7 +147,6 @@ target_include_directories(TestProject PRIVATE
 )
 if (KALAKIT_WAYLAND)
 	target_include_directories(TestProject PRIVATE
-		${EXT_XDG_DIR}
 		${WAYLAND_CLIENT_INCLUDE_DIRS}
 		${WAYLAND_EGL_INCLUDE_DIRS}
 		${EGL_INCLUDE_DIRS}
@@ -181,7 +170,6 @@ else()
 			EGL
 			${WINDOW_LIBRARY_PATH}
 			${CRASH_LIBRARY_PATH}
-			${XDG_LIBRARY_PATH}
 			${WAYLAND_CLIENT_LIBRARIES}
 			${WAYLAND_EGL_LIBRARIES}
 			${EGL_LIBRARIES}

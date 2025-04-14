@@ -28,10 +28,6 @@ namespace Project
 {
 	void Core::Initialize()
 	{
-#if KALAKIT_DEBUG && KALAKIT_WAYLAND
-		setenv("WAYLAND_DEBUG", "1", 1);
-#endif
-
 		bool initializeOpenGL = false;
 		bool initialized = KalaWindow::Initialize(
 			"window", 
