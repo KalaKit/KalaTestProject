@@ -40,6 +40,8 @@ namespace Project
 			return;
 		}
 
+		KalaWindow::SetDebugType(DebugType::DEBUG_WAYLAND_CALLBACK_CHECK);
+
 		if (initializeOpenGL)
 		{
 			OpenGLLoader::glDisablePtr(GL_BLEND);      //no transparency
