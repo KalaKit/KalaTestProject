@@ -5,6 +5,8 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <filesystem>
+#include <string>
 
 //external
 #include "window.hpp"
@@ -17,6 +19,8 @@
 
 using std::cout;
 using std::cin;
+using std::filesystem::current_path;
+using std::string;
 
 using KalaKit::KalaWindow;
 using KalaKit::OpenGL;
@@ -28,6 +32,8 @@ namespace Project
 {
 	void Core::Initialize()
 	{
+		//KalaWindow::SetDebugType(DebugType::DEBUG_FREETYPE_FONT_TEST);
+
 		bool initializeOpenGL = false;
 		bool initialized = KalaWindow::Initialize(
 			"window", 
@@ -40,7 +46,14 @@ namespace Project
 			return;
 		}
 
-		//KalaWindow::SetDebugType(DebugType::DEBUG_WAYLAND_CALLBACK_CHECK);
+		//initialize window title font
+		string fontPath = (current_path() / "files" / "fonts" / "roboto-condensed" / "RobotoCondensed-Regular.ttf").string();
+
+		bool loadedFont = KalaWindow::freeType->LoadFont(fontPath, 24, true);
+		if (loadedFont)
+		{
+			cout << "Successfully loaded font '" << fontPath << "'!\n";
+		}
 
 		if (initializeOpenGL)
 		{
