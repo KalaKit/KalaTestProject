@@ -87,6 +87,7 @@ set(GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/include/graphics")
 # External files
 set(EXT_WINDOW_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaWindow")
 set(EXT_CRASH_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaCrashHandler")
+set(EXT_FREETYPE_DIR "${CMAKE_SOURCE_DIR}/_external_shared/FreeType")
 
 # Add KalaWindow
 if (KALAKIT_WINDOWS)
@@ -97,9 +98,9 @@ if (KALAKIT_WINDOWS)
 	endif()
 else()
 	if(KALAKIT_RELEASE)
-		set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/release/libKalaWindow.a")
+		set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/release/libKalaWindow.so")
 	else()
-		set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/debug/libKalaWindowD.a")
+		set(WINDOW_LIBRARY_PATH "${EXT_WINDOW_DIR}/debug/libKalaWindowD.so")
 	endif()
 endif()
 
@@ -112,9 +113,24 @@ if (KALAKIT_WINDOWS)
 	endif()
 else()
 	if(KALAKIT_RELEASE)
-		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/libKalaCrashHandler.a")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/release/libKalaCrashHandler.so")
 	else()
-		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/libKalaCrashHandlerD.a")
+		set(CRASH_LIBRARY_PATH "${EXT_CRASH_DIR}/debug/libKalaCrashHandlerD.so")
+	endif()
+endif()
+
+# Add FreeType
+if (KALAKIT_WINDOWS)
+	if(KALAKIT_RELEASE)
+		set(FREETYPE_LIBRARY_PATH "${EXT_FREETYPE_DIR}/release/freetype.lib")
+	else()
+		set(FREETYPE_LIBRARY_PATH "${EXT_FREETYPE_DIR}/debug/freetyped.lib")
+	endif()
+else()
+	if(KALAKIT_RELEASE)
+		set(FREETYPE_LIBRARY_PATH "${EXT_FREETYPE_DIR}/release/libfreetype.so")
+	else()
+		set(FREETYPE_LIBRARY_PATH "${EXT_FREETYPE_DIR}/debug/libfreetyped.so")
 	endif()
 endif()
 
@@ -144,6 +160,7 @@ target_include_directories(TestProject PRIVATE
 	#External headers
 	${EXT_WINDOW_DIR}
 	${EXT_CRASH_DIR}
+	${EXT_FREETYPE_DIR}
 )
 if (KALAKIT_WAYLAND)
 	target_include_directories(TestProject PRIVATE
@@ -162,6 +179,7 @@ if (KALAKIT_WINDOWS)
 		opengl32
 		${CRASH_LIBRARY_PATH}
 		${WINDOW_LIBRARY_PATH}
+		${FREETYPE_LIBRARY_PATH}
 	)
 else()
 	if (KALAKIT_WAYLAND)
@@ -170,6 +188,7 @@ else()
 			EGL
 			${WINDOW_LIBRARY_PATH}
 			${CRASH_LIBRARY_PATH}
+			${FREETYPE_LIBRARY_PATH}
 			${WAYLAND_CLIENT_LIBRARIES}
 			${WAYLAND_EGL_LIBRARIES}
 			${EGL_LIBRARIES}
@@ -180,6 +199,7 @@ else()
 			EGL
 			${WINDOW_LIBRARY_PATH}
 			${CRASH_LIBRARY_PATH}
+			${FREETYPE_LIBRARY_PATH}
 			${X11_LIBRARIES}
 		)
 	endif()
