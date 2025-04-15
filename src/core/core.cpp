@@ -40,7 +40,7 @@ namespace Project
 			return;
 		}
 
-		KalaWindow::SetDebugType(DebugType::DEBUG_WAYLAND_CALLBACK_CHECK);
+		//KalaWindow::SetDebugType(DebugType::DEBUG_WAYLAND_CALLBACK_CHECK);
 
 		if (initializeOpenGL)
 		{
