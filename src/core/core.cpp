@@ -92,6 +92,6 @@ namespace Project
 
 		Triangle::Render();
 
-		KalaWindow::SwapBuffers(OpenGL::context);
+		KalaWindow::SwapOpenGLBuffers(OpenGL::context);
 	}
 }
