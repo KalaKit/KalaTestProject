@@ -38,7 +38,7 @@ namespace Project
 	{
 		//KalaWindow::SetDebugType(DebugType::DEBUG_FREETYPE_FONT_TEST);
 
-		bool initializeOpenGL = false;
+		bool initializeOpenGL = true;
 		bool initialized = KalaWindow::Initialize(
 			"window", 
 			800, 
