@@ -13,7 +13,7 @@ set "CRASH_DEBUG_DLL_ORIGIN=%PROJECT_ROOT%\KalaCrashHandler\debug\KalaCrashHandl
 set "WINDOW_RELEASE_DLL_ORIGIN=%PROJECT_ROOT%\KalaWindow\release\KalaWindow.dll"
 set "WINDOW_DEBUG_DLL_ORIGIN=%PROJECT_ROOT%\KalaWindow\debug\KalaWindowD.dll"
 
-set "FREETYPE_RELEASE_DLL_ORIGIN=%PROJECT_ROOT%\FreeType\release\freetyped.dll"
+set "FREETYPE_RELEASE_DLL_ORIGIN=%PROJECT_ROOT%\FreeType\release\freetype.dll"
 set "FREETYPE_DEBUG_DLL_ORIGIN=%PROJECT_ROOT%\FreeType\debug\freetyped.dll"
 
 if not exist "%CRASH_RELEASE_DLL_ORIGIN%" (

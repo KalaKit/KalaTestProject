@@ -12,6 +12,7 @@
 #include "window.hpp"
 #include "opengl.hpp"
 #include "opengl_loader.hpp"
+#include "enums.hpp"
 
 //project
 #include "core.hpp"
@@ -27,6 +28,9 @@ using KalaKit::OpenGL;
 using KalaKit::OpenGLLoader;
 using KalaKit::DebugType;
 using Graphics::Triangle;
+using KalaKit::PopupAction;
+using KalaKit::PopupType;
+using KalaKit::PopupResult;
 
 namespace Project
 {
@@ -34,7 +38,7 @@ namespace Project
 	{
 		//KalaWindow::SetDebugType(DebugType::DEBUG_FREETYPE_FONT_TEST);
 
-		bool initializeOpenGL = false;
+		bool initializeOpenGL = true;
 		bool initialized = KalaWindow::Initialize(
 			"window", 
 			800, 
@@ -49,7 +53,7 @@ namespace Project
 		//initialize window title font
 		string fontPath = (current_path() / "files" / "fonts" / "roboto-condensed" / "RobotoCondensed-Regular.ttf").string();
 
-		bool loadedFont = KalaWindow::freeType->LoadFont(fontPath, 24, true);
+		bool loadedFont = KalaWindow::freeType->LoadFont(fontPath, 24);
 		if (loadedFont)
 		{
 			cout << "Successfully loaded font '" << fontPath << "'!\n";
@@ -75,7 +79,7 @@ namespace Project
 		{
 			KalaWindow::Update();
 
-			//RedrawCallback();
+			if (OpenGL::isInitialized) RedrawCallback();
 		}
 
 		cout << "!!!!! UPDATE END !!!!!\n";
