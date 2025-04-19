@@ -38,7 +38,7 @@ namespace Project
 	{
 		//KalaWindow::SetDebugType(DebugType::DEBUG_FREETYPE_FONT_TEST);
 
-		bool initializeOpenGL = false;
+		bool initializeOpenGL = true;
 		bool initialized = KalaWindow::Initialize(
 			"window", 
 			800, 
@@ -46,9 +46,18 @@ namespace Project
 			initializeOpenGL);
 		if (!initialized)
 		{
-			cout << "Error: Failed to initialize KalaWindow!\n";
-			KalaWindow::SetShouldCloseState(true);
-			return;
+			string message = "Failed to initialize KalaWindow!\n";
+			cout << message;
+
+			string title = "Initialize error";
+			PopupAction action = PopupAction::POPUP_ACTION_OK;
+			PopupType type = PopupType::POPUP_TYPE_ERROR;
+			if (KalaWindow::CreatePopup(title, message, action, type)
+				== PopupResult::POPUP_RESULT_OK)
+			{
+				KalaWindow::SetShouldCloseState(true);
+				return;
+			}
 		}
 
 		//initialize window title font
