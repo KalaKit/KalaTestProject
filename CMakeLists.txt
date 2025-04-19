@@ -25,37 +25,24 @@ if (WIN32)
     target_compile_definitions(TestProject PRIVATE KALAKIT_WINDOWS)
 elseif(UNIX)
     find_package(X11 QUIET)
+    find_package(OpenGL REQUIRED)
 
     include(FindPkgConfig)
-	pkg_check_modules(WAYLAND_CLIENT QUIET wayland-client)
-	pkg_check_modules(WAYLAND_EGL QUIET wayland-egl)
 	pkg_check_modules(EGL QUIET egl)
 
-	find_package(OpenGL REQUIRED)
-	message(STATUS "OpenGL_FOUND: ${OpenGL_FOUND}")
+	message(STATUS "[KALAKIT] X11_FOUND = ${X11_FOUND}")
+	message(STATUS "[KALAKIT] EGL_FOUND = ${EGL_FOUND}")
+	message(STATUS "[KALAKIT] OpenGL_FOUND: ${OpenGL_FOUND}")
 
-	message(STATUS "X11_FOUND = ${X11_FOUND}")
-	message(STATUS "WAYLAND_CLIENT_FOUND = ${WAYLAND_CLIENT_FOUND}")
-	message(STATUS "WAYLAND_EGL_FOUND = ${WAYLAND_EGL_FOUND}")
-	message(STATUS "EGL_FOUND = ${EGL_FOUND}")
-
-    if (WAYLAND_CLIENT_FOUND)
-		set(KALAKIT_WAYLAND TRUE)
-		message(STATUS "[KALAKIT] Using Wayland backend")
-		target_compile_definitions(TestProject PRIVATE
-			KALAKIT_WAYLAND
-		)
-	elseif (X11_FOUND)
+    if (X11_FOUND)
 		set(KALAKIT_X11 TRUE)
 		message(STATUS "[KALAKIT] Using X11 backend")
-		target_compile_definitions(TestProject PRIVATE
-			KALAKIT_X11
-		)
+		target_compile_definitions(TestProject PRIVATE KALAKIT_X11)
 	else()
-		message(FATAL_ERROR "[KALAKIT] No backend found! Must support Wayland or X11.")
+		message(FATAL_ERROR "[KALAKIT] No valid backend found! Must support X11.")
 	endif()
 else()
-	message(FATAL_ERROR "Unsupported OS version! Must be WIN32 or UNIX!")
+	message(FATAL_ERROR "[KALAKIT] Unsupported platform version! Must be WIN32 or UNIX!")
 endif()
 
 # Set build global type
@@ -162,13 +149,7 @@ target_include_directories(TestProject PRIVATE
 	${EXT_CRASH_DIR}
 	${EXT_FREETYPE_DIR}
 )
-if (KALAKIT_WAYLAND)
-	target_include_directories(TestProject PRIVATE
-		${WAYLAND_CLIENT_INCLUDE_DIRS}
-		${WAYLAND_EGL_INCLUDE_DIRS}
-		${EGL_INCLUDE_DIRS}
-	)
-elseif(KALAKIT_X11)
+if(KALAKIT_X11)
 	target_include_directories(TestProject PRIVATE
 		${EGL_INCLUDE_DIRS}
 	)
@@ -182,27 +163,14 @@ if (KALAKIT_WINDOWS)
 		${FREETYPE_LIBRARY_PATH}
 	)
 else()
-	if (KALAKIT_WAYLAND)
-		target_link_libraries(TestProject PRIVATE
-			OpenGL::GL
-			EGL
-			${WINDOW_LIBRARY_PATH}
-			${CRASH_LIBRARY_PATH}
-			${FREETYPE_LIBRARY_PATH}
-			${WAYLAND_CLIENT_LIBRARIES}
-			${WAYLAND_EGL_LIBRARIES}
-			${EGL_LIBRARIES}
-		)
-	else()
-		target_link_libraries(TestProject PRIVATE
-			OpenGL::GL
-			EGL
-			${WINDOW_LIBRARY_PATH}
-			${CRASH_LIBRARY_PATH}
-			${FREETYPE_LIBRARY_PATH}
-			${X11_LIBRARIES}
-		)
-	endif()
+	target_link_libraries(TestProject PRIVATE
+		OpenGL::GL
+		EGL
+		${WINDOW_LIBRARY_PATH}
+		${CRASH_LIBRARY_PATH}
+		${FREETYPE_LIBRARY_PATH}
+		${X11_LIBRARIES}
+	)
 endif()
 
 if(KALAKIT_RELEASE)
