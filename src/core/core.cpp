@@ -60,15 +60,6 @@ namespace Project
 			}
 		}
 
-		//initialize window title font
-		string fontPath = (current_path() / "files" / "fonts" / "roboto-condensed" / "RobotoCondensed-Regular.ttf").string();
-
-		bool loadedFont = KalaWindow::freeType->LoadFont(fontPath, 24);
-		if (loadedFont)
-		{
-			cout << "Successfully loaded font '" << fontPath << "'!\n";
-		}
-
 		if (initializeOpenGL)
 		{
 			OpenGLLoader::glDisablePtr(GL_BLEND);      //no transparency

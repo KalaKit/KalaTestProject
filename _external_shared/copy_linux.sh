@@ -13,9 +13,6 @@ CRASH_DEBUG="${ROOT_DIR}/KalaCrashHandler/debug/libKalaCrashHandlerD.so"
 WINDOW_RELEASE="${ROOT_DIR}/KalaWindow/release/libKalaWindow.so"
 WINDOW_DEBUG="${ROOT_DIR}/KalaWindow/debug/libKalaWindowD.so"
 
-FREETYPE_RELEASE="${ROOT_DIR}/FreeType/release/libfreetype.so"
-FREETYPE_DEBUG="${ROOT_DIR}/FreeType/debug/libfreetyped.so"
-
 # Target paths
 
 RELEASE_DLLS="${ROOT_DIR}/../files/external dlls/release"
@@ -29,9 +26,6 @@ echo "Copied $CRASH_RELEASE to $RELEASE_DLLS"
 cp -f "$WINDOW_RELEASE" "$RELEASE_DLLS"
 echo "Copied $WINDOW_RELEASE to $RELEASE_DLLS"
 
-cp -f "$FREETYPE_RELEASE" "$RELEASE_DLLS"
-echo "Copied $FREETYPE_RELEASE to $RELEASE_DLLS"
-
 # Copy debug dlls
 
 cp -f "$CRASH_DEBUG" "$DEBUG_DLLS"
@@ -39,9 +33,6 @@ echo "Copied $CRASH_DEBUG to $DEBUG_DLLS"
 
 cp -f "$WINDOW_DEBUG" "$DEBUG_DLLS"
 echo "Copied $WINDOW_DEBUG to $DEBUG_DLLS"
-
-cp -f "$FREETYPE_DEBUG" "$DEBUG_DLLS"
-echo "Copied $FREETYPE_DEBUG to $DEBUG_DLLS"
 
 echo ""
 echo "Finished copying DLLs!"

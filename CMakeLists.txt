@@ -27,11 +27,7 @@ elseif(UNIX)
     find_package(X11 QUIET)
     find_package(OpenGL REQUIRED)
 
-    include(FindPkgConfig)
-	pkg_check_modules(EGL QUIET egl)
-
 	message(STATUS "[KALAKIT] X11_FOUND = ${X11_FOUND}")
-	message(STATUS "[KALAKIT] EGL_FOUND = ${EGL_FOUND}")
 	message(STATUS "[KALAKIT] OpenGL_FOUND: ${OpenGL_FOUND}")
 
     if (X11_FOUND)
@@ -74,7 +70,6 @@ set(GRAPHICS_DIR "${CMAKE_SOURCE_DIR}/include/graphics")
 # External files
 set(EXT_WINDOW_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaWindow")
 set(EXT_CRASH_DIR "${CMAKE_SOURCE_DIR}/_external_shared/KalaCrashHandler")
-set(EXT_FREETYPE_DIR "${CMAKE_SOURCE_DIR}/_external_shared/FreeType")
 
 # Add KalaWindow
 if (KALAKIT_WINDOWS)
@@ -106,21 +101,6 @@ else()
 	endif()
 endif()
 
-# Add FreeType
-if (KALAKIT_WINDOWS)
-	if(KALAKIT_RELEASE)
-		set(FREETYPE_LIBRARY_PATH "${EXT_FREETYPE_DIR}/release/freetype.lib")
-	else()
-		set(FREETYPE_LIBRARY_PATH "${EXT_FREETYPE_DIR}/debug/freetyped.lib")
-	endif()
-else()
-	if(KALAKIT_RELEASE)
-		set(FREETYPE_LIBRARY_PATH "${EXT_FREETYPE_DIR}/release/libfreetype.so")
-	else()
-		set(FREETYPE_LIBRARY_PATH "${EXT_FREETYPE_DIR}/debug/libfreetyped.so")
-	endif()
-endif()
-
 # Add your source files
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
 	${CMAKE_SOURCE_DIR}/src/*.cpp
@@ -147,7 +127,6 @@ target_include_directories(TestProject PRIVATE
 	#External headers
 	${EXT_WINDOW_DIR}
 	${EXT_CRASH_DIR}
-	${EXT_FREETYPE_DIR}
 )
 if(KALAKIT_X11)
 	target_include_directories(TestProject PRIVATE
@@ -160,15 +139,12 @@ if (KALAKIT_WINDOWS)
 		opengl32
 		${CRASH_LIBRARY_PATH}
 		${WINDOW_LIBRARY_PATH}
-		${FREETYPE_LIBRARY_PATH}
 	)
 else()
 	target_link_libraries(TestProject PRIVATE
 		OpenGL::GL
-		EGL
 		${WINDOW_LIBRARY_PATH}
 		${CRASH_LIBRARY_PATH}
-		${FREETYPE_LIBRARY_PATH}
 		${X11_LIBRARIES}
 	)
 endif()
