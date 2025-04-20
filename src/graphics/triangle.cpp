@@ -9,7 +9,7 @@
 
 //external
 #include "opengl_loader.hpp"
-#include "glm/glm.hpp"
+#include "platform.hpp"
 
 //project
 #include "triangle.hpp"
@@ -19,7 +19,6 @@ using std::filesystem::current_path;
 using std::string;
 using std::cout;
 using std::hex;
-using glm::vec4;
 using std::make_unique;
 
 using KalaKit::OpenGLLoader;
@@ -75,7 +74,7 @@ namespace Graphics
 		//use the compiled shader program
 		shader->Use();
 
-		shader->SetVec4("u_Color", vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		shader->SetVec4("u_Color", kvec4(1.0f, 0.0f, 0.0f, 1.0f));
 
 		//bind the VAO
 		OpenGLLoader::glBindVertexArrayPtr(vao);
