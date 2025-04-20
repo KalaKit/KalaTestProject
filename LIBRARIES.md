@@ -7,7 +7,6 @@ Note: Modifying the structure or location of any of the external library files i
 
 Full list of libraries:
 - [KalaWindow - OpenGL windowing library for Windows](https://github.com/KalaKit/KalaWindow)
-- [KalaInput - Input manager library for Windows](https://github.com/KalaKit/KalaInput)
 - [KalaCrashHandler](https://github.com/KalaKit/KalaCrashHandler)
 
 *Not created by greenlaser*
