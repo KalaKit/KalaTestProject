@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------
-HOW TO SET UP NECESSARY THINGS TO COMPILE HUB
+HOW TO SET UP NECESSARY THINGS TO COMPILE THE PROGRAM
 ---------------------------------------------------------------------
 
 Download Visual Studio 2022 Installer from here:

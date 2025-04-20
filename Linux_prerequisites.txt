@@ -1,6 +1,5 @@
 ===========================================================================
-THESE COMMANDS SHOULD ALWAYS BE RAN BEFORE RUNNING 
-ANY OF THE ELYPSO PROGRAMS FOR THE FIRST TIME
+THESE COMMANDS SHOULD ALWAYS BE RAN BEFORE RUNNING THE PROGRAM
 ===========================================================================
 
 --- SYSTEM SETUP ---
