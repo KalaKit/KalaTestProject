@@ -62,9 +62,9 @@ namespace Project
 
 		if (initializeOpenGL)
 		{
-			OpenGLLoader::glDisablePtr(GL_BLEND);      //no transparency
-			OpenGLLoader::glDisablePtr(GL_CULL_FACE);  //don't discard faces
-			OpenGLLoader::glDisablePtr(GL_DEPTH_TEST); //no depth test
+			OpenGLLoader::glDisable(GL_BLEND);      //no transparency
+			OpenGLLoader::glDisable(GL_CULL_FACE);  //don't discard faces
+			OpenGLLoader::glDisable(GL_DEPTH_TEST); //no depth test
 	
 			Triangle::Initialize();
 	
@@ -88,8 +88,8 @@ namespace Project
 
 	void Core::RedrawCallback()
 	{
-		OpenGLLoader::glClearColorPtr(0.1f, 0.1f, 0.1f, 1.0f); //dark gray
-		OpenGLLoader::glClearPtr(GL_COLOR_BUFFER_BIT);
+		OpenGLLoader::glClearColor(0.1f, 0.1f, 0.1f, 1.0f); //dark gray
+		OpenGLLoader::glClear(GL_COLOR_BUFFER_BIT);
 
 		Triangle::Render();
 
