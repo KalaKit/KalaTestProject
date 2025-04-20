@@ -129,9 +129,7 @@ target_include_directories(TestProject PRIVATE
 	${EXT_CRASH_DIR}
 )
 if(KALAKIT_X11)
-	target_include_directories(TestProject PRIVATE
-		${EGL_INCLUDE_DIRS}
-	)
+	target_include_directories(TestProject PRIVATE)
 endif()
 
 if (KALAKIT_WINDOWS)
