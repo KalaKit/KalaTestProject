@@ -52,6 +52,8 @@ namespace KalaKit
 		static PFNGLBINDVERTEXARRAYPROC        glBindVertexArray;         //Bind a VAO
 		static PFNGLGENBUFFERSPROC             glGenBuffers;              //Create one or more VBO (Vertex buffer object)
 		static PFNGLBINDBUFFERPROC             glBindBuffer;              //Bind a VBO
+		static PFNGLDELETEVERTEXARRAYSPROC     glDeleteVertexArrays;      //Delete a VAO
+		static PFNGLDELETEBUFFERSPROC          glDeleteBuffers;           //Delete a VBO
 		static PFNGLBUFFERDATAPROC             glBufferData;              //Upload data to currently bound VBO
 		static PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray;//Enable a vertex attribute slot (position, color etc)
 		static PFNGLVERTEXATTRIBPOINTERPROC    glVertexAttribPointer;     //Defines how to read vertex data from VBO
@@ -99,9 +101,12 @@ namespace KalaKit
 
 		static PFNGLGENTEXTURESPROC            glGenTextures;             //Create texture objects
 		static PFNGLBINDTEXTUREPROC            glBindTexture;             //Bind a texture
+		static PFNGLACTIVETEXTUREPROC          glActiveTexture;           //Select active texture unit
 		static PFNGLTEXIMAGE2DPROC             glTexImage2D;              //Upload texture data
+		static PFNGLTEXSUBIMAGE2DPROC          glTexSubImage2D;           //Upload a sub-region of texture data
 		static PFNGLTEXPARAMETERIPROC          glTexParameteri;           //Set texture parameter (filtering/wrapping)
 		static PFNGLGENERATEMIPMAPPROC         glGenerateMipmap;          //Generate mipmaps for the current texture
+		static PFNGLDELETETEXTURESPROC         glDeleteTextures;          //Delete one or more textures
 
 		//framebuffers and renderbuffers
 
