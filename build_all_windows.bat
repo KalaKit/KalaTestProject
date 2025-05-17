@@ -3,6 +3,9 @@
 set "PROJECT_ROOT=%~dp0"
 cd "%PROJECT_ROOT%"
 
+set CLEAN_ARG=
+if "%1" == "clean" set CLEAN_ARG=clean
+
 echo =====================================
 echo [INFO] Copying external files...
 echo =====================================
@@ -20,7 +23,7 @@ echo [INFO] Building test project in Release mode...
 echo =====================================
 echo.
 
-cmd /c "build_windows_release.bat"
+cmd /c "build_windows_release.bat" %CLEAN_ARG%
 if errorlevel 1 (
     echo [ERROR] Release build failed.
     pause
@@ -33,7 +36,7 @@ echo [INFO] Building test project in Debug mode...
 echo =====================================
 echo.
 
-cmd /c "build_windows_debug.bat"
+cmd /c "build_windows_debug.bat" %CLEAN_ARG%
 if errorlevel 1 (
     echo [ERROR] Debug build failed.
     pause
