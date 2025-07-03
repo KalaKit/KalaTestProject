@@ -3,21 +3,19 @@
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
 
-#include "graphics/renderprogram.hpp"
+#ifdef _WIN32
 
-using KalaTestProject::Graphics::RenderProgram;
+#pragma once
 
-int main()
+#include "core/platform.hpp"
+
+namespace KalaWindow::Core
 {
-	if (!RenderProgram::Initialize(
-		"Test 1234",
-		640,
-		480,
-		16,
-		200))
+	class KALAWINDOW_API MessageLoop
 	{
-		return 0;
-	}
-
-	RenderProgram::Render();
+	public:
+		static void* WindowProcCallback();
+	};
 }
+
+#endif //_WIN32

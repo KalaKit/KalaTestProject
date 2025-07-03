@@ -1,5 +1,8 @@
-# Ignored files and folders
-.vs/
-.vscode/
-build-release/
-build-debug/
+/debug_opengl
+/debug_vulkan
+/release_opengl
+/release_vulkan
+/.vs
+*.dll
+*.lib
+*.pdb
