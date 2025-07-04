@@ -68,6 +68,7 @@ bool RenderProgram::Initialize(
 		Renderer_Vulkan::EnableLayer(VulkanLayers::VL_KhronosValidation);
 
 		if (!Renderer_Vulkan::Initialize(2)) return false;
+		if (!Renderer_Vulkan::CreateSyncObjects(newWindow)) return false;
 
 		Renderer_Vulkan::CreateVulkanSurface(newWindow);
 

@@ -20,4 +20,6 @@ int main()
 	}
 
 	RenderProgram::Render();
+
+	return 0;
 }
