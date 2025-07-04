@@ -9,15 +9,18 @@
 #include <chrono>
 #include <iostream>
 
+#include "core/input.hpp"
 #include "graphics/render.hpp"
 #include "graphics/window.hpp"
 #include "graphics/vulkan/vulkan.hpp"
 
 #include "graphics/renderprogram.hpp"
 
+using KalaWindow::Core::Input;
 using KalaWindow::Graphics::Render;
 using KalaWindow::Graphics::Window;
 using KalaWindow::Graphics::Renderer_Vulkan;
+using KalaWindow::Graphics::VulkanLayers;
 using KalaWindow::Graphics::VulkanExtensions;
 using KalaWindow::Graphics::FrameResult;
 
@@ -29,7 +32,7 @@ using dur = std::chrono::steady_clock::duration;
 using std::chrono::time_point;
 using std::cout;
 
-static Window* mainWindow{};
+static Window* newWindow{};
 time_point<steady_clock> lastFrameTime{};
 
 namespace KalaTestProject::Graphics
@@ -41,19 +44,20 @@ bool RenderProgram::Initialize(
 		unsigned int newActiveSleep,
 		unsigned int newIdleSleep)
 	{
-		if (!Render::Initialize(
+		Render::Initialize();
+
+		newWindow = Window::Initialize(
 			title,
 			width,
-			height))
-		{
-			return false;
-		}
+			height);
+		if (newWindow == nullptr) return false;
 
-		mainWindow = Window::windows.front().get();
-		mainWindow->SetMinSize(kvec2{ 640, 480 });
-		mainWindow->SetMaxSize(kvec2{ 3840, 2160 });
+		if (!Input::Initialize(newWindow)) return false;
 
-		mainWindow->SetRedrawCallback(Redraw);
+		newWindow->SetMinSize(kvec2{ 640, 480 });
+		newWindow->SetMaxSize(kvec2{ 3840, 2160 });
+
+		newWindow->SetRedrawCallback(Redraw);
 
 		activeSleep = newActiveSleep;
 		idleSleep = newIdleSleep;
@@ -61,18 +65,19 @@ bool RenderProgram::Initialize(
 		Renderer_Vulkan::EnableExtension(VulkanExtensions::VE_Surface);
 		Renderer_Vulkan::EnableExtension(VulkanExtensions::VE_KhrSwapchain);
 		Renderer_Vulkan::EnableExtension(VulkanExtensions::VE_Win32Surface);
+		Renderer_Vulkan::EnableLayer(VulkanLayers::VL_KhronosValidation);
 
-		Renderer_Vulkan::Initialize();
+		if (!Renderer_Vulkan::Initialize(2)) return false;
 
-		Renderer_Vulkan::CreateVulkanSurface(mainWindow);
+		Renderer_Vulkan::CreateVulkanSurface(newWindow);
 
-		Renderer_Vulkan::CreateSwapchain(mainWindow);
+		if (!Renderer_Vulkan::CreateSwapchain(newWindow)) return false;
 
-		Renderer_Vulkan::CreateRenderPass();
-		Renderer_Vulkan::CreateFramebuffers();
+		if (!Renderer_Vulkan::CreateRenderPass(newWindow)) return false;
+		if (!Renderer_Vulkan::CreateFramebuffers(newWindow)) return false;
 
-		Renderer_Vulkan::CreateCommandPool();
-		Renderer_Vulkan::CreateCommandBuffer();
+		if (!Renderer_Vulkan::CreateCommandPool(newWindow)) return false;
+		if (!Renderer_Vulkan::CreateCommandBuffer(newWindow)) return false;
 
 		return true;
 	}
@@ -82,9 +87,9 @@ bool RenderProgram::Initialize(
 		isInitialized = true;
 		while (isInitialized)
 		{
-			Window::Update(mainWindow);
+			Window::Update(newWindow);
 
-			if (!mainWindow->IsIdle())
+			if (!newWindow->IsIdle())
 			{
 				Redraw();
 				SleepFor(activeSleep);
@@ -98,47 +103,42 @@ bool RenderProgram::Initialize(
 	void RenderProgram::Redraw()
 	{
 		uint32_t imageIndex = 0;
-		FrameResult result = Renderer_Vulkan::BeginFrame(imageIndex);
+		FrameResult result = Renderer_Vulkan::BeginFrame(newWindow, imageIndex);
 
 		if (result == FrameResult::VK_FRAME_RESIZE_NEEDED)
 		{
-			Renderer_Vulkan::DestroySwapchain();
-			Renderer_Vulkan::CreateSwapchain(mainWindow);
-			Renderer_Vulkan::CreateRenderPass();
-			Renderer_Vulkan::CreateFramebuffers();
-			Renderer_Vulkan::CreateCommandBuffer();
+			Renderer_Vulkan::HardReset(newWindow);
 			lastFrameTime = steady_clock::now();
 			return;
 		}
 		else if (result == FrameResult::VK_FRAME_ERROR)
 		{
 			cout << "    Error: Failed to begin frame! Skipping draw...\n";
+			Renderer_Vulkan::HardReset(newWindow);
 			lastFrameTime = steady_clock::now();
 			return;
 		}
 
-		if (!Renderer_Vulkan::RecordCommandBuffer(imageIndex))
+		if (!Renderer_Vulkan::RecordCommandBuffer(newWindow, imageIndex))
 		{
 			cout << "    Error: Failed to record command buffer! Skipping draw...\n";
+			Renderer_Vulkan::HardReset(newWindow);
 			lastFrameTime = steady_clock::now();
 			return;
 		}
 
-		if (!Renderer_Vulkan::SubmitFrame(imageIndex))
+		if (!Renderer_Vulkan::SubmitFrame(newWindow, imageIndex))
 		{
 			cout << "    Error: Failed to submit frame! Skipping draw...\n";
+			Renderer_Vulkan::HardReset(newWindow);
 			lastFrameTime = steady_clock::now();
 			return;
 		}
 
-		result = Renderer_Vulkan::PresentFrame(imageIndex);
+		result = Renderer_Vulkan::PresentFrame(newWindow, imageIndex);
 		if (result == FrameResult::VK_FRAME_RESIZE_NEEDED)
 		{
-			Renderer_Vulkan::DestroySwapchain();
-			Renderer_Vulkan::CreateSwapchain(mainWindow);
-			Renderer_Vulkan::CreateRenderPass();
-			Renderer_Vulkan::CreateFramebuffers();
-			Renderer_Vulkan::CreateCommandBuffer();
+			Renderer_Vulkan::HardReset(newWindow);
 			lastFrameTime = steady_clock::now();
 			return;
 		}

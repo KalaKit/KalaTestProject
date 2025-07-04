@@ -9,6 +9,7 @@
 #include <chrono>
 #include <iostream>
 
+#include "core/input.hpp"
 #include "graphics/render.hpp"
 #include "graphics/window.hpp"
 #include "graphics/opengl/opengl.hpp"
@@ -16,6 +17,7 @@
 
 #include "graphics/renderprogram.hpp"
 
+using KalaWindow::Core::Input;
 using KalaWindow::Graphics::Render;
 using KalaWindow::Graphics::Window;
 using KalaWindow::Graphics::Renderer_OpenGL;
@@ -29,7 +31,7 @@ using dur = std::chrono::steady_clock::duration;
 using std::chrono::time_point;
 using std::cout;
 
-static Window* mainWindow{};
+static Window* newWindow{};
 time_point<steady_clock> lastFrameTime{};
 
 namespace KalaTestProject::Graphics
@@ -41,19 +43,25 @@ namespace KalaTestProject::Graphics
 		unsigned int newActiveSleep,
 		unsigned int newIdleSleep)
 	{
-		if (!Render::Initialize(
+		Render::Initialize();
+
+		newWindow = Window::Initialize(
 			title,
 			width,
-			height))
+			height);
+		if (newWindow == nullptr) return false;
+
+		if (!Input::Initialize(newWindow)) return false;
+
+		if (!Renderer_OpenGL::Initialize(newWindow))
 		{
 			return false;
 		}
 
-		mainWindow = Window::windows.front().get();
-		mainWindow->SetMinSize(kvec2{ 640, 480 });
-		mainWindow->SetMaxSize(kvec2{ 3840, 2160 });
+		newWindow->SetMinSize(kvec2{ 640, 480 });
+		newWindow->SetMaxSize(kvec2{ 3840, 2160 });
 
-		mainWindow->SetRedrawCallback(Redraw);
+		newWindow->SetRedrawCallback(Redraw);
 
 		activeSleep = newActiveSleep;
 		idleSleep = newIdleSleep;
@@ -66,9 +74,9 @@ namespace KalaTestProject::Graphics
 		isInitialized = true;
 		while (isInitialized)
 		{
-			Window::Update(mainWindow);
+			Window::Update(newWindow);
 
-			if (!mainWindow->IsIdle())
+			if (!newWindow->IsIdle())
 			{
 				Redraw();
 				SleepFor(activeSleep);
@@ -86,7 +94,7 @@ namespace KalaTestProject::Graphics
 
 		//Triangle::Render();
 
-		Renderer_OpenGL::SwapOpenGLBuffers(mainWindow);
+		Renderer_OpenGL::SwapOpenGLBuffers(newWindow);
 	}
 
 	void RenderProgram::SleepFor(unsigned int ms)

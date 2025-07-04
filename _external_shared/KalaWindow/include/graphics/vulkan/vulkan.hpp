@@ -1,4 +1,4 @@
-//Copyright(C) 2025 Lost Empire Entertainment
+﻿//Copyright(C) 2025 Lost Empire Entertainment
 //This program comes with ABSOLUTELY NO WARRANTY.
 //This is free software, and you are welcome to redistribute it under certain conditions.
 //Read LICENSE.md for more information.
@@ -104,50 +104,77 @@ namespace KalaWindow::Graphics
 		//Enable selected vulkan extension, must be called before initializing Vulkan
 		static bool EnableExtension(VulkanExtensions extension);
 
-		//Initialize Vulkan and apply enabled layers and extensions
-		static bool Initialize();
+		//Initialize Vulkan and apply enabled layers and extensions.
+		//Max_frames must be 2 or 3: 
+		//   2 = lower latency (fast-paced titles, VR, etc.)
+		//   3 = better throughput / smoother frame pacing for most apps.
+		static bool Initialize(uint32_t max_frames);
 
 		//Attach Vulkan to window
 		static void CreateVulkanSurface(Window* window);
 
 		//Creates the command pool from command buffers
-		static bool CreateCommandPool();
+		static bool CreateCommandPool(Window* window);
 
 		//Allocates a single primary command buffer
-		static bool CreateCommandBuffer();
+		static bool CreateCommandBuffer(Window* window);
+
+		//Creates new semaphores and fences per window
+		static bool CreateSyncObjects(Window* window);
+		static void DestroySyncObjects(Window* window);
 
 		//
 		// RUNTIME LOOP PHASE
 		//
 
 		//Aquires the next available image from the swapchain so the GPU can render it
-		static FrameResult BeginFrame(uint32_t& imageIndex);
+		static FrameResult BeginFrame(
+			Window* window,
+			uint32_t& imageIndex);
 
 		//Records drawing commands into a VkCommandBuffer
-		static bool RecordCommandBuffer(uint32_t imageIndex);
+		static bool RecordCommandBuffer(
+			Window* window,
+			uint32_t imageIndex);
 
 		//Submits your command buffer to the graphics queue
-		static bool SubmitFrame(uint32_t imageIndex);
+		static bool SubmitFrame(
+			Window* window,
+			uint32_t imageIndex);
 
 		//Presents rendered image to the screen via the swapchain
-		static FrameResult PresentFrame(uint32_t imageIndex);
+		static FrameResult PresentFrame(
+			Window* window,
+			uint32_t imageIndex);
+
+		//Stall the GPU, destroy and recreate
+		//the swapchain and all its dependent resources
+		//(render pass, framebuffers, semaphores/fences, and command buffers)
+		static void HardReset(Window* window);
+
+		//Issue a zero‐work submit to consume the image
+		//- acquire semaphore, then immediately present that image back to the swapchain
+		//- resetting its semaphores without tearing down the swapchain
+		static void SoftReset(
+			Window* window,
+			uint32_t imageIndex);
 
 		//
 		// REMAKE PHASE
 		//
 
 		//Creates the render pass for drawing
-		static bool CreateRenderPass();
+		static bool CreateRenderPass(Window* window);
 
 		//Creates framebuffers from swapchain image views
-		static bool CreateFramebuffers();
+		static bool CreateFramebuffers(Window* window);
 
 		//
 		// REUSABLES
 		//
 
 		static bool CreateSwapchain(Window* window);
-		static void DestroySwapchain();
+		static void DestroySwapchain(Window* window);
 
 		static const vector<VulkanLayers> GetEnabledLayers() { return enabledLayers; }
 		static const vector<VulkanExtensions> GetEnabledExtensions() { return enabledExtensions; }

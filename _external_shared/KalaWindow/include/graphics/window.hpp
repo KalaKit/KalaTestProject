@@ -18,23 +18,65 @@ namespace KalaWindow::Graphics
 	using std::string;
 	using std::unique_ptr;
 	using std::vector;
+	using std::uintptr_t;
+
+	struct Window_OpenGLData
+	{
+		void* hglrc;      //OPENGL CONTEXT VIA WGL, ONLY USED FOR WINDOWS
+		void* hdc;        //OPENGL HANDLE TO DEVICE CONTEXT, ONLY USED FOR WINDOWS
+		void* glxContext; //OPENGL CONTEXT VIA GLX, ONLY USED FOR X11
+	};
+	struct Window_VulkanData
+	{
+		//Core surface & swapchain handles
+
+		uintptr_t surface;   //VkSurfaceKHR
+		uintptr_t swapchain; //VkSwapchainKHR
+
+		//Swapchain image metadata
+
+		uint32_t swapchainImageFormat;  //VkFormat
+		uint32_t swapchainExtentWidth;  //VkExtent2D
+		uint32_t swapchainExtentHeight; //VkExtent2D
+
+		//Swapchain image views and framebuffers
+
+		vector<uintptr_t>  images;       //VkImage
+		vector<uintptr_t>  imageViews;   //VkImageView
+		vector<uintptr_t>  framebuffers; //VkFramebuffer
+
+		//Synchronization primitives, one set per swapchain image
+
+		vector<uintptr_t>  imageAvailableSemaphores; //VkSemaphore
+		vector<uintptr_t>  renderFinishedSemaphores; //VkSemaphore
+		vector<uintptr_t>  inFlightFences;           //VkFence
+
+		//Command buffers & pool used for recording into those framebuffers
+
+		vector<uintptr_t>  commandBuffers; //VkCommandBuffer
+		uintptr_t commandPool;             //VkCommandPool
+
+		//The render pass used when drawing into these framebuffers
+
+		uintptr_t renderPass; //VkRenderPass
+	};
 
 	struct WindowStruct_Windows
 	{
 		void* hwnd;
 		void* hInstance;
-		void* wndProc;   //WINDOW PROC, NOT USED IN VULKAN
-		void* hglrc;     //OPENGL CONTEXT VIA WGL, NOT USED IN VULKAN
-		void* hdc;       //OPENGL HANDLE TO DEVICE CONTEXT, NOT USED IN VULKAN
-		void* surface;   //VULKAN SURFACE, NOT USED IN OPENGL
+		void* wndProc;   //WINDOW PROC FOR OPENGL, NOT USED IN VULKAN
+		Window_OpenGLData openglData;
+		Window_VulkanData vulkanData;
+
 	};
 	struct WindowStruct_X11
 	{
 		void* display;
 		void* window;
 		void* visual;
-		void* glxContext; //OPENGL CONTEXT VIA GLX, NOT USED IN VULKAN
-		void* surface;    //VULKAN SURFACE, NOT USED IN OPENGL
+		Window_OpenGLData openglData;
+		Window_VulkanData vulkanData;
 	};
 
 	class KALAWINDOW_API Window
