@@ -37,7 +37,7 @@ time_point<steady_clock> lastFrameTime{};
 
 namespace KalaTestProject::Graphics
 {
-bool RenderProgram::Initialize(
+	bool RenderProgram::Initialize(
 		const string& title,
 		unsigned int width,
 		unsigned int height,
@@ -62,10 +62,10 @@ bool RenderProgram::Initialize(
 		activeSleep = newActiveSleep;
 		idleSleep = newIdleSleep;
 
+		Renderer_Vulkan::EnableLayer(VulkanLayers::VL_KhronosValidation);
 		Renderer_Vulkan::EnableExtension(VulkanExtensions::VE_Surface);
 		Renderer_Vulkan::EnableExtension(VulkanExtensions::VE_KhrSwapchain);
 		Renderer_Vulkan::EnableExtension(VulkanExtensions::VE_Win32Surface);
-		Renderer_Vulkan::EnableLayer(VulkanLayers::VL_KhronosValidation);
 
 		if (!Renderer_Vulkan::Initialize(2)) return false;
 		if (!Renderer_Vulkan::CreateSyncObjects(newWindow)) return false;
