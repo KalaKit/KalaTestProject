@@ -63,7 +63,7 @@ namespace KalaTestProject::Graphics
 		activeSleep = newActiveSleep;
 		idleSleep = newIdleSleep;
 
-		Renderer_Vulkan::EnableLayer(VulkanLayers::V_IL_validation);
+		Renderer_Vulkan::EnableLayer(VulkanLayers::V_IL_khronos_validation);
 		Renderer_Vulkan::EnableInstanceExtension(VulkanInstanceExtensions::V_IE_khr_surface);
 		Renderer_Vulkan::EnableDeviceExtension(VulkanDeviceExtensions::V_DE_khr_swapchain);
 		Renderer_Vulkan::EnableInstanceExtension(VulkanInstanceExtensions::V_IE_khr_win32_surface);
