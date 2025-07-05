@@ -64,9 +64,9 @@ namespace KalaTestProject::Graphics
 		idleSleep = newIdleSleep;
 
 		Renderer_Vulkan::EnableLayer(VulkanLayers::V_IL_validation);
-		Renderer_Vulkan::EnableInstanceExtension(VulkanInstanceExtensions::V_IE_surface_maintenance1);
-		Renderer_Vulkan::EnableDeviceExtension(VulkanDeviceExtensions::V_DE_ext_swapchain_maintenance1);
-		Renderer_Vulkan::EnableInstanceExtension(VulkanInstanceExtensions::V_IE_win32_surface);
+		Renderer_Vulkan::EnableInstanceExtension(VulkanInstanceExtensions::V_IE_khr_surface);
+		Renderer_Vulkan::EnableDeviceExtension(VulkanDeviceExtensions::V_DE_khr_swapchain);
+		Renderer_Vulkan::EnableInstanceExtension(VulkanInstanceExtensions::V_IE_khr_win32_surface);
 
 		if (!Renderer_Vulkan::Initialize(2)) return false;
 		if (!Renderer_Vulkan::CreateSyncObjects(newWindow)) return false;
