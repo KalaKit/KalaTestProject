@@ -21,7 +21,8 @@ using KalaWindow::Graphics::Render;
 using KalaWindow::Graphics::Window;
 using KalaWindow::Graphics::Renderer_Vulkan;
 using KalaWindow::Graphics::VulkanLayers;
-using KalaWindow::Graphics::VulkanExtensions;
+using KalaWindow::Graphics::VulkanInstanceExtensions;
+using KalaWindow::Graphics::VulkanDeviceExtensions;
 using KalaWindow::Graphics::FrameResult;
 
 using std::thread;
@@ -62,10 +63,10 @@ namespace KalaTestProject::Graphics
 		activeSleep = newActiveSleep;
 		idleSleep = newIdleSleep;
 
-		Renderer_Vulkan::EnableLayer(VulkanLayers::VL_KhronosValidation);
-		Renderer_Vulkan::EnableExtension(VulkanExtensions::VE_Surface);
-		Renderer_Vulkan::EnableExtension(VulkanExtensions::VE_KhrSwapchain);
-		Renderer_Vulkan::EnableExtension(VulkanExtensions::VE_Win32Surface);
+		Renderer_Vulkan::EnableLayer(VulkanLayers::V_IL_validation);
+		Renderer_Vulkan::EnableInstanceExtension(VulkanInstanceExtensions::V_IE_surface_maintenance1);
+		Renderer_Vulkan::EnableDeviceExtension(VulkanDeviceExtensions::V_DE_ext_swapchain_maintenance1);
+		Renderer_Vulkan::EnableInstanceExtension(VulkanInstanceExtensions::V_IE_win32_surface);
 
 		if (!Renderer_Vulkan::Initialize(2)) return false;
 		if (!Renderer_Vulkan::CreateSyncObjects(newWindow)) return false;
